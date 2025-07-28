@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSrobotics - Robotics Education Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        accent: '#7c3aed'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-primary">JSrobotics</h1>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <button data-tab="home" class="tab-btn px-3 py-2 rounded-md text-sm font-medium transition-colors bg-blue-100 text-blue-700">
+                                Home
+                            </button>
+                            <button data-tab="courses" class="tab-btn px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                                Learning Center
+                            </button>
+                            <button data-tab="library" class="tab-btn px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                                Component Library
+                            </button>
+                            <button data-tab="marketplace" class="tab-btn px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                                Marketplace
+                            </button>
+                            <button data-tab="projects" class="tab-btn px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                                Project Sharing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Language Toggle -->
+                    <button id="lang-toggle" class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors">
+                        UZ
+                    </button>
+
+                    <!-- User Menu -->
+                    <div id="user-menu" class="hidden flex items-center space-x-3">
+                        <div class="text-sm">
+                            <div id="user-name" class="font-medium text-gray-700">John Doe</div>
+                            <div id="user-points" class="text-gray-500">1250 pts</div>
+                        </div>
+                        <img id="user-avatar" class="h-8 w-8 rounded-full" src="https://placehold.co/40x40/3b82f6/ffffff?text=JD" alt="User avatar">
+                        <button id="logout-btn" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+
+                    <!-- Auth Buttons -->
+                    <div id="auth-buttons" class="flex items-center space-x-2">
+                        <button id="login-btn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                            Sign In
+                        </button>
+                        <button id="signup-btn" class="bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                            Sign Up
+                        </button>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <button data-tab="home" class="mobile-tab-btn block px-3 py-2 rounded-md text-base font-medium w-full text-left bg-blue-100 text-blue-700">
+                    Home
+                </button>
+                <button data-tab="courses" class="mobile-tab-btn block px-3 py-2 rounded-md text-base font-medium w-full text-left text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                    Learning Center
+                </button>
+                <button data-tab="library" class="mobile-tab-btn block px-3 py-2 rounded-md text-base font-medium w-full text-left text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                    Component Library
+                </button>
+                <button data-tab="marketplace" class="mobile-tab-btn block px-3 py-2 rounded-md text-base font-medium w-full text-left text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                    Marketplace
+                </button>
+                <button data-tab="projects" class="mobile-tab-btn block px-3 py-2 rounded-md text-base font-medium w-full text-left text-gray-700 hover:text-blue-600 hover:bg-gray-100">
+                    Project Sharing
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Home Page -->
+        <div id="home-page" class="page active space-y-12">
+            <!-- Hero Section -->
+            <section class="text-center py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">Welcome to JSrobotics</h1>
+                <p class="text-xl mb-8 max-w-3xl mx-auto">
+                    Learn, build, and share robotics projects with our comprehensive educational platform
+                </p>
+                <div class="space-x-4">
+                    <button data-tab="courses" class="tab-btn bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                        Start Learning
+                    </button>
+                    <button data-tab="projects" class="tab-btn border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-blue-600 transition-colors">
+                        View Projects
+                    </button>
+                </div>
+            </section>
+
+            <!-- Featured Courses -->
+            <section>
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Featured Courses</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                        <img src="https://placehold.co/400x250/1e40af/ffffff?text=Robotics+Course" alt="Robotics Course" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-gray-800">Introduction to Robotics</h3>
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Beginner</span>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm">Learn the fundamentals of robotics, electronics, and programming with Arduino.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-blue-600 font-medium">4 weeks</span>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enroll</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                        <img src="https://placehold.co/400x250/7c3aed/ffffff?text=Raspberry+Pi" alt="Raspberry Pi Course" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-gray-800">Advanced Robotics with Raspberry Pi</h3>
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Advanced</span>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm">Build complex robots using Raspberry Pi, computer vision, and AI.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-blue-600 font-medium">6 weeks</span>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enroll</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                        <img src="https://placehold.co/400x250/059669/ffffff?text=Sensors+%26+Actuators" alt="Sensors Course" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-gray-800">Sensors & Actuators</h3>
+                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Intermediate</span>
+                            </div>
+                            <p class="text-gray-600 mb-4 text-sm">Master various sensors and actuators used in robotics projects.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-blue-600 font-medium">3 weeks</span>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enroll</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Projects -->
+            <section>
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Popular Projects</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <img src="https://placehold.co/300x200/f59e0b/ffffff?text=Line+Follower" alt="Line Follower Robot" class="w-full h-40 object-cover">
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Autonomous Line Follower Robot</h3>
+                            <p class="text-sm text-gray-600 mb-3">by Ali Rahmonov</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 flex items-center">
+                                    <i class="fas fa-heart mr-1"></i> 24
+                                </span>
+                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Project</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <img src="https://placehold.co/300x200/ef4444/ffffff?text=Smart+Home" alt="Smart Home" class="w-full h-40 object-cover">
+                        <div class="p-5">
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Smart Home Automation System</h3>
+                            <p class="text-sm text-gray-600 mb-3">by Zarina Karimova</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 flex items-center">
+                                    <i class="fas fa-heart mr-1"></i> 41
+                                </span>
+                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Project</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Courses Page -->
+        <div id="courses-page" class="page hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Learning Center</h1>
+                    <p class="text-gray-600 mt-2">Browse our comprehensive robotics courses and tutorials</p>
+                </div>
+                <div class="flex space-x-2">
+                    <select class="border border-gray-300 rounded-lg px-3 py-2 bg-white">
+                        <option>All Levels</option>
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                    </select>
+                    <select class="border border-gray-300 rounded-lg px-3 py-2 bg-white">
+                        <option>All Categories</option>
+                        <option>Arduino</option>
+                        <option>Raspberry Pi</option>
+                        <option>Sensors</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                    <img src="https://placehold.co/400x250/1e40af/ffffff?text=Robotics+Course" alt="Robotics Course" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Introduction to Robotics</h3>
+                            <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Beginner</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Learn the fundamentals of robotics, electronics, and programming with Arduino.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-blue-600 font-medium">4 weeks</span>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enroll</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                    <img src="https://placehold.co/400x250/7c3aed/ffffff?text=Raspberry+Pi" alt="Raspberry Pi Course" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Advanced Robotics with Raspberry Pi</h3>
+                            <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Advanced</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Build complex robots using Raspberry Pi, computer vision, and AI.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-blue-600 font-medium">6 weeks</span>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enroll</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+                    <img src="https://placehold.co/400x250/059669/ffffff?text=Sensors+%26+Actuators" alt="Sensors Course" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold text-gray-800">Sensors & Actuators</h3>
+                            <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Intermediate</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Master various sensors and actuators used in robotics projects.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-blue-600 font-medium">3 weeks</span>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enroll</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Library Page -->
+        <div id="library-page" class="page hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Component Library</h1>
+                    <p class="text-gray-600 mt-2">Comprehensive database of robotics components and sensors</p>
+                </div>
+                <select class="border border-gray-300 rounded-lg px-3 py-2 bg-white">
+                    <option>All Categories</option>
+                    <option>Sensors</option>
+                    <option>Actuators</option>
+                    <option>Microcontrollers</option>
+                    <option>Single Board Computers</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                    <img src="https://placehold.co/150x150/10b981/ffffff?text=Ultrasonic" alt="Ultrasonic Sensor" class="w-full h-24 object-cover rounded mb-3">
+                    <h4 class="font-bold text-gray-800 mb-1">HC-SR04 Ultrasonic Sensor</h4>
+                    <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">Sensor</span>
+                    <p class="text-gray-600 text-sm">Measures distance using ultrasonic waves. Range: 2cm to 400cm.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                    <img src="https://placehold.co/150x150/f59e0b/ffffff?text=Servo" alt="Servo Motor" class="w-full h-24 object-cover rounded mb-3">
+                    <h4 class="font-bold text-gray-800 mb-1">SG90 Micro Servo Motor</h4>
+                    <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">Actuator</span>
+                    <p class="text-gray-600 text-sm">Small servo motor with 180° rotation. Perfect for robotic arms.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                    <img src="https://placehold.co/150x150/8b5cf6/ffffff?text=Arduino" alt="Arduino Uno" class="w-full h-24 object-cover rounded mb-3">
+                    <h4 class="font-bold text-gray-800 mb-1">Arduino Uno R3</h4>
+                    <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">Microcontroller</span>
+                    <p class="text-gray-600 text-sm">Popular microcontroller board based on ATmega328P.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
+                    <img src="https://placehold.co/150x150/06b6d4/ffffff?text=Raspberry+Pi" alt="Raspberry Pi" class="w-full h-24 object-cover rounded mb-3">
+                    <h4 class="font-bold text-gray-800 mb-1">Raspberry Pi 4</h4>
+                    <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full mb-2">Single Board Computer</span>
+                    <p class="text-gray-600 text-sm">Powerful single-board computer for advanced robotics projects.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marketplace Page -->
+        <div id="marketplace-page" class="page hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Marketplace</h1>
+                    <p class="text-gray-600 mt-2">Shop for robotics kits and components</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="https://placehold.co/200x200/8b5cf6/ffffff?text=Starter+Kit" alt="Starter Kit" class="w-full h-40 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Starter Robotics Kit</h3>
+                        <p class="text-gray-600 mb-3 text-sm">Complete kit with Arduino, sensors, motors, and tutorial guide.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-green-600">$89.99</span>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="https://placehold.co/200x200/06b6d4/ffffff?text=Advanced+Kit" alt="Advanced Kit" class="w-full h-40 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Advanced Robotics Kit</h3>
+                        <p class="text-gray-600 mb-3 text-sm">Includes Raspberry Pi, camera module, and AI components.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-green-600">$149.99</span>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Page -->
+        <div id="projects-page" class="page hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Project Sharing</h1>
+                    <p class="text-gray-600 mt-2">Explore community projects and share your own robotics creations</p>
+                </div>
+                <button id="share-project-btn" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                    Share Project
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="https://placehold.co/300x200/f59e0b/ffffff?text=Line+Follower" alt="Line Follower Robot" class="w-full h-40 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Autonomous Line Follower Robot</h3>
+                        <p class="text-sm text-gray-600 mb-3">by Ali Rahmonov</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 flex items-center">
+                                <i class="fas fa-heart mr-1"></i> 24
+                            </span>
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Project</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <img src="https://placehold.co/300x200/ef4444/ffffff?text=Smart+Home" alt="Smart Home" class="w-full h-40 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Smart Home Automation System</h3>
+                        <p class="text-sm text-gray-600 mb-3">by Zarina Karimova</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 flex items-center">
+                                <i class="fas fa-heart mr-1"></i> 41
+                            </span>
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Project</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Sign In</h2>
+                    <button id="close-login-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="login-email">Email</label>
+                        <input type="email" id="login-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="login-password">Password</label>
+                        <input type="password" id="login-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full">Sign In</button>
+                    </div>
+                    <div class="text-center mb-4">
+                        <button type="button" id="google-login-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full flex items-center justify-center">
+                            <i class="fab fa-google mr-2"></i> Sign in with Google
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-600">Don't have an account? <button id="switch-to-signup" class="text-blue-600 hover:underline">Sign Up</button></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Signup Modal -->
+        <div id="signup-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Sign Up</h2>
+                    <button id="close-signup-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="signup-form">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="signup-email">Email</label>
+                        <input type="email" id="signup-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="signup-password">Password</label>
+                        <input type="password" id="signup-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors w-full">Sign Up</button>
+                    </div>
+                    <div class="text-center mb-4">
+                        <button type="button" id="google-signup-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors w-full flex items-center justify-center">
+                            <i class="fab fa-google mr-2"></i> Sign up with Google
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-600">Already have an account? <button id="switch-to-login" class="text-blue-600 hover:underline">Sign In</button></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">JSrobotics</h3>
+                    <p class="text-gray-300">
+                        Empowering the next generation of robotics innovators through education and collaboration.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Learn</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Courses</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tutorials</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Articles</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Community</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Projects</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Forums</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Events</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 JSrobotics. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // State management
+        const state = {
+            currentUser: null,
+            language: 'en',
+            activeTab: 'home'
+        };
+
+        // DOM Elements
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const mobileTabButtons = document.querySelectorAll('.mobile-tab-btn');
+        const pages = document.querySelectorAll('.page');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authButtons = document.getElementById('auth-buttons');
+        const userMenu = document.getElementById('user-menu');
+        const loginModal = document.getElementById('login-modal');
+        const signupModal = document.getElementById('signup-modal');
+        const closeLoginModal = document.getElementById('close-login-modal');
+        const closeSignupModal = document.getElementById('close-signup-modal');
+        const switchToSignup = document.getElementById('switch-to-signup');
+        const switchToLogin = document.getElementById('switch-to-login');
+        const langToggle = document.getElementById('lang-toggle');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const googleSignupBtn = document.getElementById('google-signup-btn');
+
+        // Event Listeners
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
+            });
+        });
+
+        mobileTabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        loginBtn.addEventListener('click', () => {
+            loginModal.classList.remove('hidden');
+        });
+
+        signupBtn.addEventListener('click', () => {
+            signupModal.classList.remove('hidden');
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            state.currentUser = null;
+            updateAuthUI();
+            showTab('home');
+        });
+
+        closeLoginModal.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+        });
+
+        closeSignupModal.addEventListener('click', () => {
+            signupModal.classList.add('hidden');
+        });
+
+        switchToSignup.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+            signupModal.classList.remove('hidden');
+        });
+
+        switchToLogin.addEventListener('click', () => {
+            signupModal.classList.add('hidden');
+            loginModal.classList.remove('hidden');
+        });
+
+        langToggle.addEventListener('click', () => {
+            state.language = state.language === 'en' ? 'uz' : 'en';
+            langToggle.textContent = state.language === 'en' ? 'UZ' : 'EN';
+            // In a real app, this would trigger a language change
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate login
+            state.currentUser = {
+                id: 1,
+                name: 'John Doe',
+                email: 'john@example.com',
+                points: 1250,
+                badges: ['Beginner', 'Course Completer']
+            };
+            updateAuthUI();
+            loginModal.classList.add('hidden');
+            showTab('home');
+        });
+
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate signup
+            state.currentUser = {
+                id: 2,
+                name: document.getElementById('signup-name').value,
+                email: document.getElementById('signup-email').value,
+                points: 0,
+                badges: []
+            };
+            updateAuthUI();
+            signupModal.classList.add('hidden');
+            showTab('home');
+        });
+
+        googleLoginBtn.addEventListener('click', () => {
+            // Simulate Google login
+            state.currentUser = {
+                id: 3,
+                name: 'Google User',
+                email: 'google@example.com',
+                points: 500,
+                badges: ['Social Login']
+            };
+            updateAuthUI();
+            loginModal.classList.add('hidden');
+            showTab('home');
+        });
+
+        googleSignupBtn.addEventListener('click', () => {
+            // Simulate Google signup
+            state.currentUser = {
+                id: 4,
+                name: 'Google User',
+                email: 'google@example.com',
+                points: 500,
+                badges: ['Social Login']
+            };
+            updateAuthUI();
+            signupModal.classList.add('hidden');
+            showTab('home');
+        });
+
+        // Functions
+        function showTab(tabName) {
+            state.activeTab = tabName;
+            
+            // Hide all pages
+            pages.forEach(page => {
+                page.classList.add('hidden');
+                page.classList.remove('active');
+            });
+            
+            // Show active page
+            document.getElementById(`${tabName}-page`).classList.remove('hidden');
+            document.getElementById(`${tabName}-page`).classList.add('active');
+            
+            // Update tab buttons
+            tabButtons.forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabName) {
+                    btn.classList.add('bg-blue-100', 'text-blue-700');
+                    btn.classList.remove('text-gray-700', 'hover:text-blue-600', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-blue-100', 'text-blue-700');
+                    btn.classList.add('text-gray-700', 'hover:text-blue-600', 'hover:bg-gray-100');
+                }
+            });
+            
+            // Update mobile tab buttons
+            mobileTabButtons.forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabName) {
+                    btn.classList.add('bg-blue-100', 'text-blue-700');
+                    btn.classList.remove('text-gray-700', 'hover:text-blue-600', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-blue-100', 'text-blue-700');
+                    btn.classList.add('text-gray-700', 'hover:text-blue-600', 'hover:bg-gray-100');
+                }
+            });
+        }
+
+        function updateAuthUI() {
+            if (state.currentUser) {
+                // Show user menu
+                authButtons.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                document.getElementById('user-name').textContent = state.currentUser.name;
+                document.getElementById('user-points').textContent = `${state.currentUser.points} pts`;
+            } else {
+                // Show auth buttons
+                authButtons.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+            }
+            
+            // Update project sharing tab visibility
+            const projectTab = document.querySelector('[data-tab="projects"]');
+            if (state.currentUser) {
+                projectTab.style.display = 'block';
+            } else {
+                projectTab.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        updateAuthUI();
+        showTab('home');
+    </script>
+</body>
+</html>
