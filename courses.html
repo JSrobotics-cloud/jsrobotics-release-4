@@ -1,10 +1,10 @@
-<!-- index.html -->
+<!-- courses.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSrobotics - Robotics Education Platform</title>
+    <title>Learning Center - JSrobotics</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -16,10 +16,10 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="index.html" class="nav-link active">Home</a>
+                    <a href="index.html" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="courses.html" class="nav-link">Learning Center</a>
+                    <a href="courses.html" class="nav-link active">Learning Center</a>
                 </li>
                 <li class="nav-item">
                     <a href="library.html" class="nav-link">Component Library</a>
@@ -54,92 +54,70 @@
     </nav>
 
     <main class="main-content">
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Welcome to JSrobotics</h1>
-                <p>Learn, build, and share robotics projects with our comprehensive educational platform</p>
-                <div class="hero-buttons">
-                    <a href="courses.html" class="btn btn-primary">Start Learning</a>
-                    <a href="projects.html" class="btn btn-outline">View Projects</a>
-                </div>
-            </div>
+        <section class="page-header">
+            <h1>Learning Center</h1>
+            <p>Browse our comprehensive robotics courses and tutorials</p>
         </section>
 
-        <section class="featured-section">
-            <h2>Featured Courses</h2>
-            <div class="card-grid">
-                <div class="card">
-                    <img src="https://placehold.co/400x250/1e40af/ffffff?text=Robotics+Course" alt="Robotics Course">
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3>Introduction to Robotics</h3>
-                            <span class="badge badge-success">Beginner</span>
-                        </div>
-                        <p>Learn the fundamentals of robotics, electronics, and programming with Arduino.</p>
-                        <div class="card-footer">
-                            <span>4 weeks</span>
-                            <button class="btn btn-primary">Enroll</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <img src="https://placehold.co/400x250/7c3aed/ffffff?text=Raspberry+Pi" alt="Raspberry Pi Course">
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3>Advanced Robotics with Raspberry Pi</h3>
-                            <span class="badge badge-danger">Advanced</span>
-                        </div>
-                        <p>Build complex robots using Raspberry Pi, computer vision, and AI.</p>
-                        <div class="card-footer">
-                            <span>6 weeks</span>
-                            <button class="btn btn-primary">Enroll</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <img src="https://placehold.co/400x250/059669/ffffff?text=Sensors+%26+Actuators" alt="Sensors Course">
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3>Sensors & Actuators</h3>
-                            <span class="badge badge-warning">Intermediate</span>
-                        </div>
-                        <p>Master various sensors and actuators used in robotics projects.</p>
-                        <div class="card-footer">
-                            <span>3 weeks</span>
-                            <button class="btn btn-primary">Enroll</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="filters">
+            <select class="filter-select">
+                <option>All Levels</option>
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+            </select>
+            <select class="filter-select">
+                <option>All Categories</option>
+                <option>Arduino</option>
+                <option>Raspberry Pi</option>
+                <option>Sensors</option>
+            </select>
+        </div>
 
-        <section class="featured-section">
-            <h2>Popular Projects</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <img src="https://placehold.co/300x200/f59e0b/ffffff?text=Line+Follower" alt="Line Follower Robot">
-                    <div class="project-content">
-                        <h3>Autonomous Line Follower Robot</h3>
-                        <p class="project-author">by Ali Rahmonov</p>
-                        <div class="project-stats">
-                            <span><i class="fas fa-heart"></i> 24</span>
-                            <a href="#" class="btn btn-link">View Project</a>
-                        </div>
+        <div class="card-grid">
+            <div class="card">
+                <img src="https://placehold.co/400x250/1e40af/ffffff?text=Robotics+Course" alt="Robotics Course">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3>Introduction to Robotics</h3>
+                        <span class="badge badge-success">Beginner</span>
                     </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://placehold.co/300x200/ef4444/ffffff?text=Smart+Home" alt="Smart Home">
-                    <div class="project-content">
-                        <h3>Smart Home Automation System</h3>
-                        <p class="project-author">by Zarina Karimova</p>
-                        <div class="project-stats">
-                            <span><i class="fas fa-heart"></i> 41</span>
-                            <a href="#" class="btn btn-link">View Project</a>
-                        </div>
+                    <p>Learn the fundamentals of robotics, electronics, and programming with Arduino.</p>
+                    <div class="card-footer">
+                        <span>4 weeks</span>
+                        <button class="btn btn-primary">Enroll</button>
                     </div>
                 </div>
             </div>
-        </section>
+            <div class="card">
+                <img src="https://placehold.co/400x250/7c3aed/ffffff?text=Raspberry+Pi" alt="Raspberry Pi Course">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3>Advanced Robotics with Raspberry Pi</h3>
+                        <span class="badge badge-danger">Advanced</span>
+                    </div>
+                    <p>Build complex robots using Raspberry Pi, computer vision, and AI.</p>
+                    <div class="card-footer">
+                        <span>6 weeks</span>
+                        <button class="btn btn-primary">Enroll</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://placehold.co/400x250/059669/ffffff?text=Sensors+%26+Actuators" alt="Sensors Course">
+                <div class="card-content">
+                    <div class="card-header">
+                        <h3>Sensors & Actuators</h3>
+                        <span class="badge badge-warning">Intermediate</span>
+                    </div>
+                    <p>Master various sensors and actuators used in robotics projects.</p>
+                    <div class="card-footer">
+                        <span>3 weeks</span>
+                        <button class="btn btn-primary">Enroll</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
