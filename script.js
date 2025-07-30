@@ -1,4 +1,22 @@
 // script.js
+// Check for existing token on page load
+function checkExistingSession() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        // In a real app, you'd verify the token with the backend
+        // For now, we'll just assume the user is logged in
+        // You might want to fetch user data from the backend here
+        currentUser = {
+            name: 'Previously Logged In User', // This should come from token verification
+            points: 0 // This should come from actual user data
+        };
+        updateAuthUI();
+    }
+}
+
+// Call it on page load
+checkExistingSession();
+
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const hamburger = document.querySelector('.hamburger');
@@ -60,43 +78,73 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Login Form Submission
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        
-        // Simulate login (in real app, this would be an API call)
-        currentUser = {
-            id: 1,
-            name: 'John Doe',
-            email: email,
-            points: 1250,
-            badges: ['Beginner', 'Course Completer']
-        };
-        
-        updateAuthUI();
-        closeModals();
-    });
+    // Login Form Submission
+loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Store token in localStorage (or sessionStorage)
+            localStorage.setItem('token', data.token);
+            currentUser = data.user;
+            updateAuthUI();
+            closeModals();
+            console.log('Login successful:', data);
+        } else {
+            alert(data.error || 'Login failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during login');
+    }
+});
 
     // Signup Form Submission
-    signupForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const name = document.getElementById('signup-name').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-        
-        // Simulate signup (in real app, this would be an API call)
-        currentUser = {
-            id: Date.now(),
-            name: name,
-            email: email,
-            points: 0,
-            badges: []
-        };
-        
-        updateAuthUI();
-        closeModals();
-    });
+    // Signup Form Submission
+signupForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: name, email, password }) // Assuming username is the same as name
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Store token in localStorage (or sessionStorage)
+            localStorage.setItem('token', data.token);
+            currentUser = data.user;
+            updateAuthUI();
+            closeModals();
+            console.log('Signup successful:', data);
+        } else {
+            alert(data.error || 'Signup failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during signup');
+    }
+});
 
     // Google Auth Buttons
     googleLoginBtn.addEventListener('click', function() {
@@ -127,11 +175,13 @@ document.addEventListener('DOMContentLoaded', function() {
         closeModals();
     });
 
-    // Logout
-    logoutBtn.addEventListener('click', function() {
-        currentUser = null;
-        updateAuthUI();
-    });
+    
+// Logout
+logoutBtn.addEventListener('click', function() {
+    localStorage.removeItem('token');
+    currentUser = null;
+    updateAuthUI();
+});
 
     // Update Auth UI based on user state
     function updateAuthUI() {
