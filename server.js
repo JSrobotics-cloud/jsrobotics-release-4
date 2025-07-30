@@ -1,11 +1,11 @@
-// server.js
+// server.js (CORRECTED VERSION)
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const multer = require('multer');
-const { Storage } = require('@google-cloud/storage');
+const admin = require('firebase-admin');
 require('dotenv').config();
 
 const app = express();
@@ -21,12 +21,17 @@ mongoose.connect(process.env.MONGODB_URI, {
     useUnifiedTopology: true
 });
 
-// Firebase Storage (simulated with Google Cloud Storage)
-const storage = new Storage({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+// Firebase Admin SDK Initialization
+// Download service account key from Firebase Console:
+// Project Settings > Service Accounts > Generate new private key
+const serviceAccount = require('jsrobotics-media-firebase-adminsdk-fbsvc-1a1c7d5668.json'); // You'll download this
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: `${serviceAccount.project_id}.appspot.com` // Default Firebase Storage bucket
 });
-const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET);
+
+const bucket = admin.storage().bucket();
 
 // Multer configuration for file uploads
 const upload = multer({
@@ -156,6 +161,8 @@ const uploadToFirebase = async (file, folder) => {
     return new Promise((resolve, reject) => {
         stream.on('error', reject);
         stream.on('finish', async () => {
+            // Make the file publicly readable
+            await fileUpload.makePublic();
             const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
             resolve(publicUrl);
         });

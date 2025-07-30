@@ -36,3 +36,6 @@ build/
 
 # === Other ===
 *.tgz
+
+# Firebase admin credentials
+jsrobotics-media-firebase-adminsdk-fbsvc-1a1c7d5668.json
