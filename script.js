@@ -77,15 +77,17 @@ document.addEventListener('DOMContentLoaded', function() {
         langToggle.textContent = language === 'en' ? 'UZ' : 'EN';
     });
 
-    // Login Form Submission
-    // Login Form Submission
+// Login Form Submission
 loginForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-    
+
+
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- Update this!
+
     try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -93,56 +95,83 @@ loginForm.addEventListener('submit', async function(e) {
             body: JSON.stringify({ email, password })
         });
 
+        // Check if the response is ok
+        if (!response.ok) {
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } catch (e) {
+                 // If parsing JSON fails, get text
+                errorMessage = await response.text();
+            }
+            throw new Error(errorMessage);
+        }
+
+        // Parse the successful JSON response
         const data = await response.json();
 
-        if (response.ok) {
-            // Store token in localStorage (or sessionStorage)
-            localStorage.setItem('token', data.token);
-            currentUser = data.user;
-            updateAuthUI();
-            closeModals();
-            console.log('Login successful:', data);
-        } else {
-            alert(data.error || 'Login failed');
-        }
+        // Success - Store token and update UI
+        localStorage.setItem('token', data.token);
+        currentUser = data.user;
+        updateAuthUI();
+        closeModals();
+        console.log('Login successful:', data);
+
     } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during login');
+        console.error('Login Error:', error);
+        // Show user-friendly error message
+        alert('Login failed: ' + error.message);
     }
 });
 
-    // Signup Form Submission
-    // Signup Form Submission
+// Signup Form Submission
 signupForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     const name = document.getElementById('signup-name').value;
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
-    
+
+
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- Update this!
+
     try {
-        const response = await fetch('/api/auth/register', {
+        const response = await fetch(`${BASE_URL}/api/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: name, email, password }) // Assuming username is the same as name
+            body: JSON.stringify({ username: name, email, password })
         });
 
+        // Check if the response is ok (status 200-299)
+        if (!response.ok) {
+             // Try to get error message from JSON, otherwise get text
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } catch (e) {
+                // If parsing JSON fails, get text
+                errorMessage = await response.text();
+            }
+            throw new Error(errorMessage);
+        }
+
+        // Parse the successful JSON response
         const data = await response.json();
 
-        if (response.ok) {
-            // Store token in localStorage (or sessionStorage)
-            localStorage.setItem('token', data.token);
-            currentUser = data.user;
-            updateAuthUI();
-            closeModals();
-            console.log('Signup successful:', data);
-        } else {
-            alert(data.error || 'Signup failed');
-        }
+        // Success - Store token and update UI
+        localStorage.setItem('token', data.token);
+        currentUser = data.user;
+        updateAuthUI();
+        closeModals();
+        console.log('Signup successful:', data);
+
     } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during signup');
+        console.error('Signup Error:', error);
+        // Show user-friendly error message
+        alert('Signup failed: ' + error.message);
     }
 });
 
@@ -175,7 +204,7 @@ signupForm.addEventListener('submit', async function(e) {
         closeModals();
     });
 
-    
+
 // Logout
 logoutBtn.addEventListener('click', function() {
     localStorage.removeItem('token');
