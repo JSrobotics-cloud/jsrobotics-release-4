@@ -31,9 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const token = localStorage.getItem('token');
         if (token) {
             // You need to update this BASE_URL to point to your actual backend server
-            // If running locally, it might be 'https://jsrobotics-release-4.vercel.app/'
+            // If running locally, it might be 'https://jsrobotics-release-4.vercel.app'
             // If deployed, it should be the URL of your backend (e.g., Render, Railway, etc.)
-            const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
+            const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
 
             try {
                 // Verify token with backend
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('login-password').value;
 
         // You need to update this BASE_URL to point to your actual backend server
-        const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
+        const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
 
         try {
             const response = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('signup-password').value;
 
         // You need to update this BASE_URL to point to your actual backend server
-        const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
+        const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
 
         try {
             const response = await fetch(`${BASE_URL}/api/auth/register`, {
