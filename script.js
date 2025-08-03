@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     googleLoginBtn.addEventListener('click', async function() {
-    const tokenId = await getGoogleIdToken(); 
+    const tokenId = await handleGoogleSignIn(); 
     const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 
     try {
@@ -232,15 +232,31 @@ document.addEventListener('DOMContentLoaded', function() {
     updateAuthUI();
 });
 
-async function handleGoogleSignIn(googleUser) {
-  const tokenId = googleUser.getAuthResponse().id_token;
 
-  const res = await fetch('/api/auth/googleSign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tokenId })
-  });
 
-  const data = await res.json();
-  console.log(data); // Contains your JWT or user info
+window.handleGoogleSignIn = async function (response) {
+    const tokenId = response.credential;
+
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
+
+    try {
+        const res = await fetch(`${BASE_URL}/api/auth/googleSign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tokenId })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Authentication failed');
+
+        localStorage.setItem('token', data.token);
+        currentUser = data.user;
+        updateAuthUI();
+        closeModals();
+        console.log('Google Sign-In successful:', data);
+    } catch (err) {
+        console.error('Google Sign-In Failed:', err);
+        alert('Google Sign-In Failed: ' + err.message);
+    }
 }
+

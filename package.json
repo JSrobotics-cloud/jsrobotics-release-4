@@ -2,6 +2,7 @@
   "name": "jsrobotics",
   "version": "4.0.1",
   "description": "Robotics Education Platform",
+  "Developer":"https://github.com/userSarvar",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
