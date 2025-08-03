@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const langToggle = document.getElementById('lang-toggle');
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
-    const googleLoginBtn = document.getElementById('google-login-btn');
+    // const googleLoginBtn = document.getElementById('google-login-btn');
     const googleSignupBtn = document.getElementById('google-signup-btn');
 
     let currentUser = null;
@@ -174,28 +174,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    googleLoginBtn.addEventListener('click', async function() {
-    const tokenId = await handleGoogleSignIn(); 
-    const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
+//     googleLoginBtn.addEventListener('click', async function() {
+//     const tokenId = await handleGoogleSignIn(); 
+//     const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 
-    try {
-        const res = await fetch(`${BASE_URL}/api/auth/googleSign`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tokenId })
-        });
+//     try {
+//         const res = await fetch(`${BASE_URL}/api/auth/googleSign`, {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ tokenId })
+//         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+//         const data = await res.json();
+//         if (!res.ok) throw new Error(data.error);
 
-        localStorage.setItem('token', data.token);
-        currentUser = data.user;
-        updateAuthUI();
-        closeModals();
-    } catch (err) {
-        alert('Google Sign-In Failed: ' + err.message);
-    }
-});
+//         localStorage.setItem('token', data.token);
+//         currentUser = data.user;
+//         updateAuthUI();
+//         closeModals();
+//     } catch (err) {
+//         alert('Google Sign-In Failed: ' + err.message);
+//     }
+// });
 
     logoutBtn.addEventListener('click', function() {
         localStorage.removeItem('token');
