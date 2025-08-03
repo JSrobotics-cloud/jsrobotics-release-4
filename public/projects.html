@@ -1,10 +1,10 @@
-<!-- marketplace.html -->
+<!-- projects.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketplace - JSrobotics</title>
+    <title>Project Sharing - JSrobotics</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -25,10 +25,10 @@
                     <a href="library.html" class="nav-link">Component Library</a>
                 </li>
                 <li class="nav-item">
-                    <a href="marketplace.html" class="nav-link active">Marketplace</a>
+                    <a href="marketplace.html" class="nav-link">Marketplace</a>
                 </li>
                 <li class="nav-item">
-                    <a href="projects.html" class="nav-link">Project Sharing</a>
+                    <a href="projects.html" class="nav-link active">Project Sharing</a>
                 </li>
             </ul>
             <div class="nav-auth">
@@ -55,30 +55,34 @@
 
     <main class="main-content">
         <section class="page-header">
-            <h1>Marketplace</h1>
-            <p>Shop for robotics kits and components</p>
+            <h1>Project Sharing</h1>
+            <p>Explore community projects and share your own robotics creations</p>
         </section>
 
-        <div class="marketplace-grid">
-            <div class="marketplace-card">
-                <img src="https://placehold.co/200x200/8b5cf6/ffffff?text=Starter+Kit" alt="Starter Kit">
-                <div class="marketplace-content">
-                    <h3>Starter Robotics Kit</h3>
-                    <p>Complete kit with Arduino, sensors, motors, and tutorial guide.</p>
-                    <div class="marketplace-footer">
-                        <span class="price">$89.99</span>
-                        <button class="btn btn-success">Add to Cart</button>
+        <div class="page-actions">
+            <button id="share-project-btn" class="btn btn-primary">Share Project</button>
+        </div>
+
+        <div class="project-grid">
+            <div class="project-card">
+                <img src="https://placehold.co/300x200/f59e0b/ffffff?text=Line+Follower" alt="Line Follower Robot">
+                <div class="project-content">
+                    <h3>Autonomous Line Follower Robot</h3>
+                    <p class="project-author">by Ali Rahmonov</p>
+                    <div class="project-stats">
+                        <span><i class="fas fa-heart"></i> 24</span>
+                        <a href="#" class="btn btn-link">View Project</a>
                     </div>
                 </div>
             </div>
-            <div class="marketplace-card">
-                <img src="https://placehold.co/200x200/06b6d4/ffffff?text=Advanced+Kit" alt="Advanced Kit">
-                <div class="marketplace-content">
-                    <h3>Advanced Robotics Kit</h3>
-                    <p>Includes Raspberry Pi, camera module, and AI components.</p>
-                    <div class="marketplace-footer">
-                        <span class="price">$149.99</span>
-                        <button class="btn btn-success">Add to Cart</button>
+            <div class="project-card">
+                <img src="https://placehold.co/300x200/ef4444/ffffff?text=Smart+Home" alt="Smart Home">
+                <div class="project-content">
+                    <h3>Smart Home Automation System</h3>
+                    <p class="project-author">by Zarina Karimova</p>
+                    <div class="project-stats">
+                        <span><i class="fas fa-heart"></i> 41</span>
+                        <a href="#" class="btn btn-link">View Project</a>
                     </div>
                 </div>
             </div>
@@ -176,5 +180,7 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
 </body>
 </html>
