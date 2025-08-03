@@ -234,29 +234,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-window.handleGoogleSignIn = async function (response) {
-    const tokenId = response.credential;
+window.handleGoogleSignIn = async (response) => {
+  const tokenId = response.credential;
+  const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 
-    const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/googleSign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tokenId })
+    });
 
-    try {
-        const res = await fetch(`${BASE_URL}/api/auth/googleSign`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tokenId })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Authentication failed');
-
-        localStorage.setItem('token', data.token);
-        currentUser = data.user;
-        updateAuthUI();
-        closeModals();
-        console.log('Google Sign-In successful:', data);
-    } catch (err) {
-        console.error('Google Sign-In Failed:', err);
-        alert('Google Sign-In Failed: ' + err.message);
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem('token', data.token);
+      currentUser = data.user;
+      updateAuthUI();
+      closeModals();
+      console.log('Google login success:', data);
+    } else {
+      throw new Error(data.error || 'Google login failed');
     }
-}
+  } catch (error) {
+    console.error('Google Sign-In Failed:', error);
+    alert('Google Sign-In Failed: ' + error.message);
+  }
+};
 
