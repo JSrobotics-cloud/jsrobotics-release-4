@@ -58,21 +58,20 @@ export default async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    const client = new google.auth.OAuth2();
+
     const ticket = await client.verifyIdToken({
       idToken: tokenId,
       audience: process.env.GOOGLE_CLIENT_ID
     });
 
     const payload = ticket.getPayload();
-    const { email, name, picture } = payload;
+    const { email, name } = payload;
 
     let user = await User.findOne({ email });
     if (!user) {
       user = await User.create({
         username: name,
         email,
-        profile: { avatarURL: picture },
         badges: ['Google Auth']
       });
     }
