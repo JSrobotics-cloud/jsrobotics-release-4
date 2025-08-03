@@ -60,7 +60,7 @@ res.setHeader("Access-Control-Allow-Origin", "*"); // or your frontend URL
 res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
 
-export default async function handler(req, res) {
+export default async function handler(req) {
     // Only allow POST requests
     if (req.method !== 'POST') {
         res.setHeader('Allow', ['POST']);
