@@ -4,6 +4,18 @@ import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID
+  });
+  return ticket.getPayload();
+}
+
+
 // === User Schema ===
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },

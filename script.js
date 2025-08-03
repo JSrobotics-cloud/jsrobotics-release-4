@@ -1,7 +1,5 @@
-// script.js
-
 document.addEventListener('DOMContentLoaded', function() {
-    // DOM Elements
+
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     const loginBtn = document.getElementById('login-btn');
@@ -21,26 +19,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const googleLoginBtn = document.getElementById('google-login-btn');
     const googleSignupBtn = document.getElementById('google-signup-btn');
 
-    // State management
-    // Move currentUser declaration here to be global within the script scope
     let currentUser = null;
     let language = 'en';
 
-    // --- FIXED: Check for existing token on page load and verify it ---
     async function checkExistingSession() {
         const token = localStorage.getItem('token');
         if (token) {
-            // You need to update this BASE_URL to point to your actual backend server
-            // If running locally, it might be 'https://jsrobotics-release-4.vercel.app'
-            // If deployed, it should be the URL of your backend (e.g., Render, Railway, etc.)
-            const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
+
+            const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; 
 
             try {
-                // Verify token with backend
-                const response = await fetch(`${BASE_URL}/api/profile/me`, { // Example endpoint, adjust if needed
+
+                const response = await fetch(`${BASE_URL}/api/profile/me`, { 
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}` // Send token in Authorization header
+                        'Authorization': `Bearer ${token}` 
                     }
                 });
 
@@ -49,28 +42,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const userData = await response.json();
-                currentUser = userData; // Assuming the response contains user data
+                currentUser = userData; 
                 updateAuthUI();
                 console.log('Session restored for:', currentUser);
             } catch (error) {
                 console.error('Session check failed:', error);
-                // Token invalid or verification failed, remove it
+
                 localStorage.removeItem('token');
-                currentUser = null; // Ensure currentUser is null on failure
+                currentUser = null; 
             }
         }
     }
 
-    // Call it on page load
     checkExistingSession();
-    // --- END OF FIX ---
 
-    // Mobile menu toggle
     hamburger.addEventListener('click', () => {
         navMenu.classList.toggle('active');
     });
 
-    // Auth Modal Functions
     function openLoginModal() {
         loginModal.classList.remove('hidden');
         signupModal.classList.add('hidden');
@@ -86,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
         signupModal.classList.add('hidden');
     }
 
-    // Auth Event Listeners
     loginBtn.addEventListener('click', openLoginModal);
     signupBtn.addEventListener('click', openSignupModal);
     closeLoginModal.addEventListener('click', closeModals);
@@ -94,20 +82,17 @@ document.addEventListener('DOMContentLoaded', function() {
     switchToSignup.addEventListener('click', openSignupModal);
     switchToLogin.addEventListener('click', openLoginModal);
 
-    // Language Toggle
     langToggle.addEventListener('click', () => {
         language = language === 'en' ? 'uz' : 'en';
         langToggle.textContent = language === 'en' ? 'UZ' : 'EN';
     });
 
-    // --- FIXED: Login Form Submission ---
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
-        // You need to update this BASE_URL to point to your actual backend server
-        const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
+        const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; 
 
         try {
             const response = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -121,11 +106,10 @@ document.addEventListener('DOMContentLoaded', function() {
             let data;
             const contentType = response.headers.get("content-type");
 
-            // Check if the response is JSON
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 data = await response.json();
             } else {
-                // If not JSON, get it as text (e.g., HTML error page)
+
                 data = { error: await response.text() || `HTTP error! status: ${response.status}` };
             }
 
@@ -133,32 +117,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error || `HTTP error! status: ${response.status}`);
             }
 
-            // Success - Store token and update UI
             localStorage.setItem('token', data.token);
             currentUser = data.user;
             updateAuthUI();
             closeModals();
             console.log('Login successful:', data);
-            // Optional: User feedback
-            // alert('Login successful!');
 
         } catch (error) {
             console.error('Login Error:', error);
-            // Show user-friendly error message
+
             alert('Login failed: ' + (error.message || 'An unknown error occurred'));
         }
     });
-    // --- END OF FIX ---
 
-    // --- FIXED: Signup Form Submission ---
     signupForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('signup-name').value;
         const email = document.getElementById('signup-email').value;
         const password = document.getElementById('signup-password').value;
 
-        // You need to update this BASE_URL to point to your actual backend server
-        const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR BACKEND URL ---
+        const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; 
 
         try {
             const response = await fetch(`${BASE_URL}/api/auth/register`, {
@@ -166,17 +144,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username: name, email, password }) // Ensure backend expects 'username'
+                body: JSON.stringify({ username: name, email, password }) 
             });
 
             let data;
             const contentType = response.headers.get("content-type");
 
-            // Check if the response is JSON
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 data = await response.json();
             } else {
-                // If not JSON, get it as text (e.g., HTML error page)
+
                 data = { error: await response.text() || `HTTP error! status: ${response.status}` };
             }
 
@@ -184,80 +161,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error || `HTTP error! status: ${response.status}`);
             }
 
-            // Success - Store token and update UI
             localStorage.setItem('token', data.token);
             currentUser = data.user;
             updateAuthUI();
             closeModals();
             console.log('Signup successful:', data);
-            // Optional: User feedback
-            // alert('Signup successful!');
 
         } catch (error) {
             console.error('Signup Error:', error);
-            // Show user-friendly error message
+
             alert('Signup failed: ' + (error.message || 'An unknown error occurred'));
         }
     });
-    // --- END OF FIX ---
 
-    // Google Auth Buttons (Simulated)
-    googleLoginBtn.addEventListener('click', function() {
-        // Simulate Google login
-        currentUser = {
-            id: 2,
-            name: 'Google User',
-            email: 'google@example.com',
-            points: 500,
-            badges: ['Social Login']
-        };
+    googleLoginBtn.addEventListener('click', async function() {
+    const tokenId = await getGoogleIdToken(); 
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 
+    try {
+        const res = await fetch(`${BASE_URL}/api/auth/googleSign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tokenId })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        localStorage.setItem('token', data.token);
+        currentUser = data.user;
         updateAuthUI();
         closeModals();
-    });
+    } catch (err) {
+        alert('Google Sign-In Failed: ' + err.message);
+    }
+});
 
-    googleSignupBtn.addEventListener('click', function() {
-        // Simulate Google signup
-        currentUser = {
-            id: 3,
-            name: 'Google User',
-            email: 'google@example.com',
-            points: 500,
-            badges: ['Social Login']
-        };
-
-        updateAuthUI();
-        closeModals();
-    });
-
-
-    // --- FIXED: Logout ---
     logoutBtn.addEventListener('click', function() {
         localStorage.removeItem('token');
-        currentUser = null; // Explicitly set to null
+        currentUser = null; 
         updateAuthUI();
     });
-    // --- END OF FIX ---
 
-    // Update Auth UI based on user state
     function updateAuthUI() {
         if (currentUser) {
-            // User is logged in
+
             authButtons.classList.add('hidden');
             userMenu.classList.remove('hidden');
-            // Ensure elements exist before updating
+
             const nameElement = document.getElementById('user-name');
             const pointsElement = document.getElementById('user-points');
             if (nameElement) nameElement.textContent = currentUser.name || currentUser.username || 'User';
             if (pointsElement) pointsElement.textContent = `${currentUser.points || 0} pts`;
         } else {
-            // User is not logged in
+
             authButtons.classList.remove('hidden');
             userMenu.classList.add('hidden');
         }
     }
 
-    // Close modals when clicking outside
     window.addEventListener('click', function(e) {
         if (e.target === loginModal) {
             closeModals();
@@ -267,6 +229,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize auth UI (will be called again after session check)
     updateAuthUI();
 });
+
+async function handleGoogleSignIn(googleUser) {
+  const tokenId = googleUser.getAuthResponse().id_token;
+
+  const res = await fetch('/api/auth/googleSign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tokenId })
+  });
+
+  const data = await res.json();
+  console.log(data); // Contains your JWT or user info
+}
