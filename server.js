@@ -1,7 +1,7 @@
 // server.js (CORRECTED VERSION)
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const multer = require('multer');
@@ -24,7 +24,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Firebase Admin SDK Initialization
 // Download service account key from Firebase Console:
 // Project Settings > Service Accounts > Generate new private key
-const serviceAccount = require('jsrobotics-media-firebase-adminsdk-fbsvc-1a1c7d5668.json'); // You'll download this
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY); // You'll download this
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

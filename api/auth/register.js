@@ -1,6 +1,6 @@
 // api/auth/register.js
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // IMPORTANT: You'll likely need to adjust these imports
@@ -55,6 +55,9 @@ async function connectToDatabase() {
     // Compile the model if not already compiled
     User = mongoose.models.User || mongoose.model('User', userSchema);
 }
+
+res.setHeader("Access-Control-Allow-Origin", "*"); // or your frontend URL
+res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
 
 export default async function handler(req, res) {

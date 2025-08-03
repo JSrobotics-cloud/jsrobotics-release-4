@@ -1,6 +1,6 @@
 // api/auth/login.js
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // --- Mongoose Models (Same as in register.js) ---
@@ -44,6 +44,10 @@ async function connectToDatabase() {
     User = mongoose.models.User || mongoose.model('User', userSchema);
 }
 // --- End of Mongoose Models ---
+
+res.setHeader("Access-Control-Allow-Origin", "*"); // or your frontend URL
+res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
 
 export default async function handler(req, res) {
     // Only allow POST requests
