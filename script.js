@@ -233,7 +233,7 @@ loginForm.addEventListener('submit', async function(e) {
         // --- ADMIN CHECK ---
         // Define your list of admin emails
         // TODO: In a more secure setup, the backend would determine this and send it in the response
-        const ADMIN_EMAILS = ['admin@example.com', 'genz101.uz@gmail.com']; // Add your actual admin emails here
+        const ADMIN_EMAILS = ['itspecialist2200@gmail.com', 'genz101.uz@gmail.com']; // Add your actual admin emails here
         const isAdmin = ADMIN_EMAILS.includes(data.user.email);
 
         // Success - Store token and user data in localStorage
