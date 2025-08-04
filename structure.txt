@@ -1,0 +1,29 @@
+your-project-root/
+├── index.html
+├── adminpanel.html
+├── script.js
+├── admin.js
+├── styles.css
+├── lib/ (or utils/)
+│   ├── db.js          // MongoDB connection & models
+│   ├── firebase.js    // Firebase Admin SDK initialization
+│   └── auth.js        // Authentication middleware
+├── api/
+│   ├── auth/
+│   │   ├── login.js
+│   │   └── register.js
+│   ├── courses/
+│   │   ├── index.js     // GET /api/courses
+│   │   ├── [id].js      // GET /api/courses/:id
+│   │   └── create.js    // POST /api/courses (handles course creation with video)
+│   ├── projects/
+│   │   ├── index.js     // GET /api/projects
+│   │   └── create.js    // POST /api/projects (handles project creation with image)
+│   ├── components/
+│   │   ├── index.js     // GET /api/components
+│   │   └── create.js    // POST /api/components (handles component creation with image)
+│   ├── upload.js        // POST /api/upload (handles general file uploads)
+│   └── profile/
+│       ├── [id].js      // GET /api/profile/:id
+│       └── update.js    // PUT /api/profile (requires auth)
+└── ... (other frontend files)
