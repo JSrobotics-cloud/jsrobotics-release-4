@@ -19,6 +19,40 @@ function updateAuthUI() {
     }
 }
 
+
+// Function to add/remove Admin Panel link based on user role
+function updateNavigationForAdmin(isAdmin) {
+    // Find the existing "Project Sharing" nav item to insert after
+    const projectSharingLink = document.querySelector('.nav-menu a[href="projects.html"]');
+    const navMenu = document.querySelector('.nav-menu');
+
+    // Check if Admin Panel link already exists
+    const existingAdminLink = document.querySelector('.nav-menu a[href="adminpanel.html"]');
+
+    if (isAdmin && !existingAdminLink) {
+        // User is an admin and link doesn't exist, add it
+        if (projectSharingLink) {
+            const adminListItem = document.createElement('li');
+            adminListItem.className = 'nav-item';
+            adminListItem.innerHTML = '<a href="adminpanel.html" class="nav-link">Admin Panel</a>';
+            // Insert after Project Sharing
+            projectSharingLink.parentElement.after(adminListItem);
+        } else {
+            // Fallback: append to end if Project Sharing not found
+            const adminListItem = document.createElement('li');
+            adminListItem.className = 'nav-item';
+            adminListItem.innerHTML = '<a href="adminpanel.html" class="nav-link">Admin Panel</a>';
+            navMenu.appendChild(adminListItem);
+        }
+    } else if (!isAdmin && existingAdminLink) {
+        // User is not an admin but link exists, remove it
+        const adminListItem = existingAdminLink.parentElement;
+        if (adminListItem) {
+            navMenu.removeChild(adminListItem);
+        }
+    }
+}
+
 function closeModals() {
     const loginModal = document.getElementById('login-modal');
     const signupModal = document.getElementById('signup-modal');
@@ -71,29 +105,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 
-    async function checkExistingSession() {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const response = await fetch(`${BASE_URL}/api/profile/me`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+// Check for existing token on page load and verify it
+async function checkExistingSession() {
+    const token = localStorage.getItem('token');
+    const userDataJson = localStorage.getItem('userData'); // Get stored user data
 
-                if (!response.ok) throw new Error('Invalid token or failed to fetch user');
-                const userData = await response.json();
-                currentUser = userData;
-                updateAuthUI();
-                console.log('Session restored for:', currentUser);
-            } catch (error) {
-                console.error('Session check failed:', error);
-                localStorage.removeItem('token');
-                currentUser = null;
-            }
+    if (token && userDataJson) {
+        try {
+            // Parse stored user data (including isAdmin)
+            const userData = JSON.parse(userDataJson);
+            currentUser = userData;
+            
+            // --- UPDATE NAVIGATION BASED ON STORED DATA ---
+            updateNavigationForAdmin(userData.isAdmin);
+
+            // Optionally, verify the token with the backend for security
+            // (Implementation depends on your backend's /api/verify or similar endpoint)
+            /*
+            const response = await fetch(`${BASE_URL}/api/auth/verify`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) throw new Error('Invalid token');
+
+            const data = await response.json();
+            currentUser = data.user;
+            */
+
+            updateAuthUI();
+        } catch (error) {
+            console.error('Session check failed:', error);
+            // Token or user data invalid, remove them
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            currentUser = null;
         }
+    } else if (token) {
+         // Fallback if userData wasn't stored correctly
+         localStorage.removeItem('token');
     }
+    // If no token, ensure no admin link is shown
+    if (!token) {
+         updateNavigationForAdmin(false);
+    }
+}
 
     checkExistingSession();
 
@@ -127,38 +185,66 @@ document.addEventListener('DOMContentLoaded', function () {
         langToggle.textContent = language === 'en' ? 'UZ' : 'EN';
     });
 
-    loginForm?.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email')?.value;
-        const password = document.getElementById('login-password')?.value;
+    // Login Form Submission
+loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-        try {
-            const response = await fetch(`${BASE_URL}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+    // --- CHANGE THIS BASE_URL TO MATCH YOUR BACKEND ---
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- Update this to your actual backend URL
 
-            let data;
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                data = await response.json();
-            } else {
-                data = { error: await response.text() || `HTTP error! status: ${response.status}` };
-            }
+    try {
+        const response = await fetch(`${BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
 
-            if (!response.ok) throw new Error(data.error || `HTTP error! status: ${response.status}`);
-
-            localStorage.setItem('token', data.token);
-            currentUser = data.user;
-            updateAuthUI();
-            closeModals();
-            console.log('Login successful:', data);
-        } catch (error) {
-            console.error('Login Error:', error);
-            alert('Login failed: ' + (error.message || 'An unknown error occurred'));
+        let data;
+        const contentType = response.headers.get("content-type");
+        
+        // Check if the response is JSON
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+        } else {
+            // If not JSON, get it as text (e.g., HTML error page)
+            data = { error: await response.text() || `HTTP error! status: ${response.status}` };
         }
-    });
+
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        }
+
+        // --- ADMIN CHECK ---
+        // Define your list of admin emails (in a real app, this check should happen on the backend)
+        const ADMIN_EMAILS = ['js.robotics24@gmail.com', 'itspecialist2200@gmail.com']; // Add your actual admin emails
+        const isAdmin = ADMIN_EMAILS.includes(data.user.email);
+
+        // Store token and user data in localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userData', JSON.stringify({...data.user, isAdmin: isAdmin})); // Store isAdmin status
+
+        // Update global currentUser variable
+        currentUser = data.user;
+        currentUser.isAdmin = isAdmin; // Attach isAdmin to currentUser object
+
+        // --- UPDATE NAVIGATION ---
+        updateNavigationForAdmin(isAdmin);
+
+        // Update UI
+        updateAuthUI();
+        closeModals();
+        console.log('Login successful:', data);
+        alert('Login successful!');
+
+    } catch (error) {
+        console.error('Login Error:', error);
+        alert('Login failed: ' + (error.message || 'An unknown error occurred'));
+    }
+});
 
     signupForm?.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -194,11 +280,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    logoutBtn?.addEventListener('click', function () {
-        localStorage.removeItem('token');
-        currentUser = null;
-        updateAuthUI();
-    });
+    // Logout
+logoutBtn.addEventListener('click', function() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData'); // Remove stored user data including isAdmin
+    currentUser = null;
+    // Ensure admin link is removed
+    updateNavigationForAdmin(false);
+    updateAuthUI();
+});
 
     window.addEventListener('click', function (e) {
         if (e.target === loginModal || e.target === signupModal) {
