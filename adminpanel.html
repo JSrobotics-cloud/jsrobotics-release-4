@@ -1,0 +1,578 @@
+<!-- adminpanel.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - JSrobotics</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="adminstyles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>JSrobotics</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="courses.html" class="nav-link">Learning Center</a>
+                </li>
+                <li class="nav-item">
+                    <a href="library.html" class="nav-link">Component Library</a>
+                </li>
+                <li class="nav-item">
+                    <a href="marketplace.html" class="nav-link">Marketplace</a>
+                </li>
+                <li class="nav-item">
+                    <a href="projects.html" class="nav-link">Project Sharing</a>
+                </li>
+                <li class="nav-item">
+                    <a href="adminpanel.html" class="nav-link active">Admin Panel</a>
+                </li>
+            </ul>
+            <div class="nav-auth">
+                <button id="lang-toggle" class="btn btn-secondary">UZ</button>
+                <div id="auth-buttons">
+                    <button id="login-btn" class="btn btn-primary">Sign In</button>
+                    <button id="signup-btn" class="btn btn-secondary">Sign Up</button>
+                </div>
+                <div id="user-menu" class="hidden">
+                    <span id="user-name">Admin User</span>
+                    <span id="user-points">5000 pts</span>
+                    <button id="logout-btn" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <div class="admin-actions">
+                <button id="save-all-btn" class="btn btn-success">
+                    <i class="fas fa-save"></i> Save All Changes
+                </button>
+            </div>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="admin-nav">
+            <button class="active" data-section="home">Home Page</button>
+            <button data-section="courses">Learning Center</button>
+            <button data-section="library">Component Library</button>
+            <button data-section="marketplace">Marketplace</button>
+            <button data-section="course-builder">Create Course</button>
+        </div>
+
+        <!-- Home Page Section -->
+        <section id="home-section" class="admin-section active">
+            <h2>Edit Home Page Content</h2>
+            
+            <div class="form-group">
+                <label for="hero-title">Hero Title</label>
+                <input type="text" id="hero-title" value="Welcome to JSrobotics">
+            </div>
+            
+            <div class="form-group">
+                <label for="hero-subtitle">Hero Subtitle</label>
+                <textarea id="hero-subtitle">Learn, build, and share robotics projects with our comprehensive educational platform</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="featured-courses-title">Featured Courses Title</label>
+                <input type="text" id="featured-courses-title" value="Featured Courses">
+            </div>
+            
+            <div class="form-group">
+                <label for="popular-projects-title">Popular Projects Title</label>
+                <input type="text" id="popular-projects-title" value="Popular Projects">
+            </div>
+        </section>
+
+        <!-- Learning Center Section -->
+        <section id="courses-section" class="admin-section">
+            <h2>Edit Learning Center</h2>
+            
+            <div class="form-group">
+                <label for="courses-title">Page Title</label>
+                <input type="text" id="courses-title" value="Learning Center">
+            </div>
+            
+            <div class="form-group">
+                <label for="courses-subtitle">Page Subtitle</label>
+                <textarea id="courses-subtitle">Browse our comprehensive robotics courses and tutorials</textarea>
+            </div>
+            
+            <h3>Current Courses</h3>
+            <div class="course-list" id="courses-list">
+                <!-- Courses will be loaded here dynamically -->
+            </div>
+        </section>
+
+        <!-- Component Library Section -->
+        <section id="library-section" class="admin-section">
+            <h2>Edit Component Library</h2>
+            
+            <div class="form-group">
+                <label for="library-title">Page Title</label>
+                <input type="text" id="library-title" value="Component Library">
+            </div>
+            
+            <div class="form-group">
+                <label for="library-subtitle">Page Subtitle</label>
+                <textarea id="library-subtitle">Comprehensive database of robotics components and sensors</textarea>
+            </div>
+            
+            <h3>Add New Component</h3>
+            <div class="form-group">
+                <label for="component-name">Component Name</label>
+                <input type="text" id="component-name" placeholder="HC-SR04 Ultrasonic Sensor">
+            </div>
+            
+            <div class="form-group">
+                <label for="component-category">Category</label>
+                <select id="component-category">
+                    <option value="sensor">Sensor</option>
+                    <option value="actuator">Actuator</option>
+                    <option value="microcontroller">Microcontroller</option>
+                    <option value="sbc">Single Board Computer</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="component-description">Description</label>
+                <textarea id="component-description" placeholder="Measures distance using ultrasonic waves. Range: 2cm to 400cm."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="component-image">Image URL</label>
+                <input type="text" id="component-image" placeholder="https://example.com/component-image.jpg">
+            </div>
+            
+            <button id="add-component-btn" class="btn btn-primary">Add Component</button>
+        </section>
+
+        <!-- Marketplace Section -->
+        <section id="marketplace-section" class="admin-section">
+            <h2>Edit Marketplace</h2>
+            
+            <div class="form-group">
+                <label for="marketplace-title">Page Title</label>
+                <input type="text" id="marketplace-title" value="Marketplace">
+            </div>
+            
+            <div class="form-group">
+                <label for="marketplace-subtitle">Page Subtitle</label>
+                <textarea id="marketplace-subtitle">Shop for robotics kits and components</textarea>
+            </div>
+            
+            <h3>Add New Product</h3>
+            <div class="form-group">
+                <label for="product-name">Product Name</label>
+                <input type="text" id="product-name" placeholder="Starter Robotics Kit">
+            </div>
+            
+            <div class="form-group">
+                <label for="product-price">Price ($)</label>
+                <input type="number" id="product-price" placeholder="89.99" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label for="product-description">Description</label>
+                <textarea id="product-description" placeholder="Complete kit with Arduino, sensors, motors, and tutorial guide."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-image">Image URL</label>
+                <input type="text" id="product-image" placeholder="https://example.com/product-image.jpg">
+            </div>
+            
+            <button id="add-product-btn" class="btn btn-primary">Add Product</button>
+        </section>
+
+        <!-- Course Builder Section -->
+        <section id="course-builder-section" class="admin-section">
+            <h2>Create New Course</h2>
+            
+            <div class="form-group">
+                <label for="new-course-title">Course Title</label>
+                <input type="text" id="new-course-title" placeholder="Introduction to Robotics">
+            </div>
+            
+            <div class="form-group">
+                <label for="new-course-level">Level</label>
+                <select id="new-course-level">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="new-course-duration">Duration</label>
+                <input type="text" id="new-course-duration" placeholder="4 weeks">
+            </div>
+            
+            <div class="form-group">
+                <label for="new-course-description">Description</label>
+                <textarea id="new-course-description" placeholder="Learn the fundamentals of robotics, electronics, and programming with Arduino."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="new-course-image">Image URL</label>
+                <input type="text" id="new-course-image" placeholder="https://example.com/course-image.jpg">
+            </div>
+            
+            <h3>Add Lessons</h3>
+            <div id="lessons-container">
+                <div class="lesson-item">
+                    <div class="lesson-header">
+                        <h4>Lesson 1</h4>
+                        <button class="btn btn-danger remove-lesson-btn">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Lesson Title</label>
+                        <input type="text" class="lesson-title" placeholder="Getting Started with Arduino">
+                    </div>
+                    <div class="form-group">
+                        <label>Video URL</label>
+                        <input type="text" class="lesson-video" placeholder="https://example.com/video1.mp4">
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea class="lesson-content" placeholder="In this lesson, you will learn..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="add-lesson-btn" class="btn btn-secondary">
+                <i class="fas fa-plus"></i> Add Another Lesson
+            </button>
+            
+            <button id="create-course-btn" class="btn btn-success btn-block">
+                <i class="fas fa-rocket"></i> Publish Course
+            </button>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>JSrobotics</h3>
+                <p>Empowering the next generation of robotics innovators through education and collaboration.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Learn</h4>
+                <ul>
+                    <li><a href="#">Courses</a></li>
+                    <li><a href="#">Tutorials</a></li>
+                    <li><a href="#">Articles</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="#">Projects</a></li>
+                    <li><a href="#">Forums</a></li>
+                    <li><a href="#">Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JSrobotics. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const navButtons = document.querySelectorAll('.admin-nav button');
+        const sections = document.querySelectorAll('.admin-section');
+        const saveAllBtn = document.getElementById('save-all-btn');
+        const notification = document.getElementById('notification');
+        const addLessonBtn = document.getElementById('add-lesson-btn');
+        const createCourseBtn = document.getElementById('create-course-btn');
+        const addComponentBtn = document.getElementById('add-component-btn');
+        const addProductBtn = document.getElementById('add-product-btn');
+        const lessonsContainer = document.getElementById('lessons-container');
+
+        // Sample data for demonstration
+        let courses = [
+            {
+                id: 1,
+                title: "Introduction to Robotics",
+                level: "Beginner",
+                duration: "4 weeks",
+                image: "https://placehold.co/400x250/1e40af/ffffff?text=Robotics+Course",
+                description: "Learn the fundamentals of robotics, electronics, and programming with Arduino."
+            },
+            {
+                id: 2,
+                title: "Advanced Robotics with Raspberry Pi",
+                level: "Advanced",
+                duration: "6 weeks",
+                image: "https://placehold.co/400x250/7c3aed/ffffff?text=Raspberry+Pi",
+                description: "Build complex robots using Raspberry Pi, computer vision, and AI."
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const sectionId = button.getAttribute('data-section');
+                    
+                    // Update active button
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Show active section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === `${sectionId}-section`) {
+                            section.classList.add('active');
+                        }
+                    });
+                    
+                    // Load dynamic content if needed
+                    if (sectionId === 'courses') {
+                        loadCourses();
+                    }
+                });
+            });
+
+            // Save all changes
+            saveAllBtn.addEventListener('click', saveAllChanges);
+
+            // Add lesson
+            addLessonBtn.addEventListener('click', addLesson);
+
+            // Create course
+            createCourseBtn.addEventListener('click', createCourse);
+
+            // Add component
+            addComponentBtn.addEventListener('click', addComponent);
+
+            // Add product
+            addProductBtn.addEventListener('click', addProduct);
+
+            // Initialize courses list
+            loadCourses();
+        });
+
+        // Navigation functions
+        function showSection(sectionId) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${sectionId}-section`) {
+                    section.classList.add('active');
+                }
+            });
+        }
+
+        // Save all changes
+        function saveAllChanges() {
+            showNotification('All changes saved successfully!', 'success');
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Load courses for management
+        function loadCourses() {
+            const coursesList = document.getElementById('courses-list');
+            coursesList.innerHTML = '';
+            
+            courses.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                courseCard.innerHTML = `
+                    <img src="${course.image}" alt="${course.title}">
+                    <div class="course-card-content">
+                        <h3>${course.title}</h3>
+                        <p>${course.description}</p>
+                        <div class="course-actions">
+                            <button class="btn btn-primary">Edit</button>
+                            <button class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                `;
+                coursesList.appendChild(courseCard);
+            });
+        }
+
+        // Add lesson to course builder
+        function addLesson() {
+            const lessonCount = document.querySelectorAll('.lesson-item').length + 1;
+            const lessonItem = document.createElement('div');
+            lessonItem.className = 'lesson-item';
+            lessonItem.innerHTML = `
+                <div class="lesson-header">
+                    <h4>Lesson ${lessonCount}</h4>
+                    <button class="btn btn-danger remove-lesson-btn">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Lesson Title</label>
+                    <input type="text" class="lesson-title" placeholder="Getting Started with Arduino">
+                </div>
+                <div class="form-group">
+                    <label>Video URL</label>
+                    <input type="text" class="lesson-video" placeholder="https://example.com/video1.mp4">
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea class="lesson-content" placeholder="In this lesson, you will learn..."></textarea>
+                </div>
+            `;
+            lessonsContainer.appendChild(lessonItem);
+            
+            // Add event listener to remove button
+            lessonItem.querySelector('.remove-lesson-btn').addEventListener('click', function() {
+                lessonsContainer.removeChild(lessonItem);
+                renumberLessons();
+            });
+        }
+
+        // Renumber lessons after removal
+        function renumberLessons() {
+            const lessons = document.querySelectorAll('.lesson-item');
+            lessons.forEach((lesson, index) => {
+                const header = lesson.querySelector('.lesson-header h4');
+                header.textContent = `Lesson ${index + 1}`;
+            });
+        }
+
+        // Create new course
+        function createCourse() {
+            const title = document.getElementById('new-course-title').value;
+            const level = document.getElementById('new-course-level').value;
+            const duration = document.getElementById('new-course-duration').value;
+            const description = document.getElementById('new-course-description').value;
+            const image = document.getElementById('new-course-image').value;
+            
+            if (!title || !description) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Add to courses array
+            const newCourse = {
+                id: courses.length + 1,
+                title,
+                level,
+                duration,
+                image,
+                description
+            };
+            
+            courses.push(newCourse);
+            showNotification(`Course "${title}" created successfully!`, 'success');
+            
+            // Reset form
+            document.getElementById('new-course-title').value = '';
+            document.getElementById('new-course-description').value = '';
+            document.getElementById('new-course-image').value = '';
+            document.getElementById('new-course-duration').value = '';
+            
+            // Reset lessons
+            lessonsContainer.innerHTML = `
+                <div class="lesson-item">
+                    <div class="lesson-header">
+                        <h4>Lesson 1</h4>
+                        <button class="btn btn-danger remove-lesson-btn">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Lesson Title</label>
+                        <input type="text" class="lesson-title" placeholder="Getting Started with Arduino">
+                    </div>
+                    <div class="form-group">
+                        <label>Video URL</label>
+                        <input type="text" class="lesson-video" placeholder="https://example.com/video1.mp4">
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea class="lesson-content" placeholder="In this lesson, you will learn..."></textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Add component to library
+        function addComponent() {
+            const name = document.getElementById('component-name').value;
+            const category = document.getElementById('component-category').value;
+            const description = document.getElementById('component-description').value;
+            const image = document.getElementById('component-image').value;
+            
+            if (!name || !description) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            showNotification(`Component "${name}" added successfully!`, 'success');
+            
+            // Reset form
+            document.getElementById('component-name').value = '';
+            document.getElementById('component-description').value = '';
+            document.getElementById('component-image').value = '';
+        }
+
+        // Add product to marketplace
+        function addProduct() {
+            const name = document.getElementById('product-name').value;
+            const price = document.getElementById('product-price').value;
+            const description = document.getElementById('product-description').value;
+            const image = document.getElementById('product-image').value;
+            
+            if (!name || !price || !description) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            showNotification(`Product "${name}" added successfully!`, 'success');
+            
+            // Reset form
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-description').value = '';
+            document.getElementById('product-image').value = '';
+        }
+    </script>
+</body>
+</html>
