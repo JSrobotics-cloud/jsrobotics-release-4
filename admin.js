@@ -8,17 +8,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- DOM Elements ---
     const navButtons = document.querySelectorAll('.admin-nav button');
     const sections = document.querySelectorAll('.admin-section');
-    const saveAllBtn = document.getElementById('save-all-btn');
+    // const saveAllBtn = document.getElementById('save-all-btn'); // Removed as per simplification
     const notification = document.getElementById('notification');
     const addSectionBtn = document.getElementById('add-section-btn');
     const publishCourseBtn = document.getElementById('publish-course-btn');
     const addComponentBtn = document.getElementById('add-component-btn');
     const addProductBtn = document.getElementById('add-product-btn');
-    const adminLogoutBtn = document.getElementById('admin-logout-btn');
+    // const adminLogoutBtn = document.getElementById('admin-logout-btn'); // Not needed, handled by script.js
 
-    // --- State Management ---
-    // This would ideally come from your backend or localStorage after login
-    // For now, we use sample data
+    // --- State Management (Simulated Data) ---
+    // In a real app, this data would be fetched from your backend API
     let existingCourses = [
         {
             _id: "course_001",
@@ -89,26 +88,12 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
 
     // --- Initialize ---
-    initializeAdminPanel();
     setupNavigation();
     setupEventListeners();
     setupFileUploads();
     loadVisibilityData(); // Load data for the default active "visibility" section
 
     // --- Functions ---
-
-    function initializeAdminPanel() {
-        // Check if user is admin (this should be done securely in a real app)
-        // For now, we assume the user is an admin if they can access this page
-        // because you handle login in script.js
-
-        // Set admin user name (this should come from your login process)
-        const adminUserName = document.getElementById('admin-user-name');
-        if (adminUserName) {
-            // In a real app, get this from localStorage or a global variable set by script.js
-            adminUserName.textContent = "Administrator"; // Placeholder
-        }
-    }
 
     function setupNavigation() {
         navButtons.forEach(button => {
@@ -141,28 +126,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function setupEventListeners() {
-        if (saveAllBtn) saveAllBtn.addEventListener('click', saveAllChanges);
+        // if (saveAllBtn) saveAllBtn.addEventListener('click', saveAllChanges); // Removed
         if (addSectionBtn) addSectionBtn.addEventListener('click', addSection);
         if (publishCourseBtn) publishCourseBtn.addEventListener('click', publishCourse);
         if (addComponentBtn) addComponentBtn.addEventListener('click', addComponent);
         if (addProductBtn) addProductBtn.addEventListener('click', addProduct);
-        if (adminLogoutBtn) adminLogoutBtn.addEventListener('click', handleLogout);
+        // Logout is handled by script.js, no listener needed here
     }
 
-    function handleLogout() {
-        // This should trigger your logout logic in script.js
-        // For example, by dispatching a custom event or calling a function
-        // if (typeof logoutUser === 'function') logoutUser();
-        // Or, redirect to logout endpoint if you have one
-        // window.location.href = '/logout'; // If you have a server-side logout
-
-        // For simulation, just reload the page or redirect to index
-        alert('Logout functionality should be handled by your main script.js');
-        // window.location.href = 'index.html'; // Uncomment for actual redirect
-    }
-
+    // --- File Uploads ---
     function setupFileUploads() {
-        // Setup file upload areas
         setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
         setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
         setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
@@ -235,11 +208,11 @@ document.addEventListener('DOMContentLoaded', function () {
         /*
         const formData = new FormData();
         formData.append('file', file);
-        
-        fetch(`${API_BASE_URL}/api/upload`, { // You need to implement this endpoint
+
+        fetch(`${API_BASE_URL}/api/upload`, {
             method: 'POST',
             body: formData,
-            // headers: { 'Authorization': `Bearer ${authToken}` } // Include auth if needed
+            // headers: { 'Authorization': `Bearer ${authToken}` }
         })
         .then(response => {
             if (!response.ok) throw new Error('Upload failed');
@@ -320,26 +293,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function createVisibilityCard(item, type) {
+        // Use the new, smaller card class
         const card = document.createElement('div');
-        card.className = 'item-card';
+        card.className = 'item-card-small'; 
 
         const imageHtml = item.image ? `<img src="${item.image}" alt="${item.title || item.name}">` : '';
         const titleHtml = `<h3>${item.title || item.name}</h3>`;
-        const descriptionHtml = item.description ? `<p>${item.description}</p>` : (item.author ? `<p>by ${item.author}</p>` : '');
+        // Keep description short or omit for small cards if needed
+        const descriptionHtml = item.description ? `<p>${item.description.substring(0, 60)}${item.description.length > 60 ? '...' : ''}</p>` : (item.author ? `<p>by ${item.author}</p>` : '');
 
         const isChecked = item.featured ? 'checked' : '';
+        // Use the new, smaller actions class
         const actionsHtml = `
-            <div class="item-actions">
-                <div class="toggle-visibility">
+            <div class="item-actions-small"> 
+                <span>Featured</span> <!-- Simple text label -->
+                <div class="toggle-visibility-small"> 
                     <input type="checkbox" id="toggle-${type}-${item._id}" ${isChecked} data-id="${item._id}" data-type="${type}">
-                    <label for="toggle-${type}-${item._id}">Featured</label>
+                    <label for="toggle-${type}-${item._id}"></label> <!-- Label for checkbox -->
                 </div>
             </div>
         `;
 
         card.innerHTML = `
             ${imageHtml}
-            <div class="item-card-content">
+            <div class="item-card-content-small"> 
                 ${titleHtml}
                 ${descriptionHtml}
             </div>
@@ -358,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function createItemCard(item, type) {
-        // For Components and Products, show details
+        // For Components and Products, use the standard larger card
         const card = document.createElement('div');
         card.className = 'item-card';
 
@@ -376,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
             descriptionHtml += `<p><strong>Category:</strong> ${item.category}</p>`;
         }
 
-        // For now, no edit/delete actions are implemented in this simplified version
+        // Simple actions for display
         const actionsHtml = `
             <div class="item-actions">
                 <span class="item-id">ID: ${item._id}</span>
@@ -406,11 +383,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (project) project.featured = isFeatured;
         }
         showNotification(`${type} visibility updated (simulated)`, 'success');
-        // fetch(`${API_BASE_URL}/api/${type}s/${id}`, { method: 'PATCH', body: JSON.stringify({featured: isFeatured}), ... })
+        // Example API call:
+        // fetch(`${API_BASE_URL}/api/${type}s/${id}`, { 
+        //     method: 'PATCH', 
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({featured: isFeatured})
+        // })
     }
 
-    // --- Course Builder Functions ---
-
+    // --- Course Builder Functions (Largely unchanged, just removed handleLogout call) ---
     function addSection() {
         const sectionsContainer = document.getElementById('sections-container');
         if (!sectionsContainer) return;
@@ -458,7 +439,6 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         sectionsContainer.appendChild(sectionItem);
 
-        // Setup event listeners for the new section
         const newLessonContainer = sectionItem.querySelector('.lessons-container');
         const addLessonBtn = sectionItem.querySelector('.add-lesson-btn');
         const removeLessonBtn = sectionItem.querySelector('.remove-lesson-btn');
@@ -481,7 +461,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Setup file drop for the new lesson video
         const videoDropArea = sectionItem.querySelector('.lesson-video-drop-area');
         const videoFileInput = sectionItem.querySelector('.lesson-video-file');
         const videoStatus = sectionItem.querySelector('.lesson-video-upload-status');
@@ -524,7 +503,6 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         lessonsContainer.appendChild(lessonItem);
 
-        // Add event listener to new remove button
         const removeBtn = lessonItem.querySelector('.remove-lesson-btn');
         if (removeBtn) {
             removeBtn.addEventListener('click', function () {
@@ -533,7 +511,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Setup file drop for the new lesson video
         const videoDropArea = lessonItem.querySelector('.lesson-video-drop-area');
         const videoFileInput = lessonItem.querySelector('.lesson-video-file');
         const videoStatus = lessonItem.querySelector('.lesson-video-upload-status');
@@ -545,7 +522,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function setupFileDropAreaForLesson(dropArea, fileInput, statusElement, hiddenInput) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        // ... (same as before) ...
+         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
 
@@ -608,7 +586,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Collect sections and lessons
         const sectionsData = [];
         const sectionItems = document.querySelectorAll('.section-item');
 
@@ -656,7 +633,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Prepare course data
         const newCourse = {
             courseId: courseId,
             title: title,
@@ -665,38 +641,31 @@ document.addEventListener('DOMContentLoaded', function () {
             description: description,
             image: imageUrl,
             sections: sectionsData,
-            featured: false // New courses are not featured by default
+            featured: false
         };
 
         // --- SIMULATED PUBLISH ---
-        // In a real app, you would send this data to your backend API
         console.log('Publishing course (simulated):', newCourse);
+        // Example API call:
         /*
         fetch(`${API_BASE_URL}/api/courses`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // 'Authorization': `Bearer ${authToken}` // Include auth if needed
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newCourse)
         })
         .then(response => {
-            if (!response.ok) throw new Error('Failed to publish course');
-            return response.json();
+             if (!response.ok) throw new Error('Failed to publish course');
+             return response.json();
         })
         .then(data => {
-            showNotification(`Course "${title}" published successfully!`, 'success');
-            // Optionally, add to local list or reload
-            // existingCourses.push({...newCourse, _id: data._id});
-            resetCourseBuilder();
+             showNotification(`Course "${title}" published successfully!`, 'success');
+             resetCourseBuilder();
         })
         .catch(error => {
-            console.error('Error publishing course:', error);
-            showNotification(`Error publishing course: ${error.message}`, 'error');
+             console.error('Error publishing course:', error);
+             showNotification(`Error publishing course: ${error.message}`, 'error');
         });
         */
-
-        // For simulation
         showNotification(`Course "${title}" published successfully! (Simulated)`, 'success');
         console.log("Published Course Data:", newCourse);
         resetCourseBuilder();
@@ -723,7 +692,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Reset sections to initial state
         const sectionsContainer = document.getElementById('sections-container');
         if (sectionsContainer) {
             sectionsContainer.innerHTML = `
@@ -766,7 +734,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
 
-            // Re-attach event listeners for the reset section
             const firstSection = sectionsContainer.querySelector('.section-item');
             if (firstSection) {
                 const addLessonBtn = firstSection.querySelector('.add-lesson-btn');
@@ -791,7 +758,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
 
-                // Setup file drop for the lesson video in the reset section
                 const videoDropArea = firstSection.querySelector('.lesson-video-drop-area');
                 const videoFileInput = firstSection.querySelector('.lesson-video-file');
                 const videoStatus = firstSection.querySelector('.lesson-video-upload-status');
@@ -805,7 +771,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- Components & Products ---
-
     function addComponent() {
         const name = document.getElementById('component-name')?.value;
         const category = document.getElementById('component-category')?.value;
@@ -817,7 +782,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // --- SIMULATED ADD COMPONENT ---
         const newComponent = {
             _id: `comp_${Date.now()}`,
             name: name,
@@ -827,32 +791,16 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         console.log('Adding component (simulated):', newComponent);
+        // Example API call:
         /*
         fetch(`${API_BASE_URL}/api/components`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // 'Authorization': `Bearer ${authToken}`
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newComponent)
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to add component');
-            return response.json();
-        })
-        .then(data => {
-            showNotification(`Component "${name}" added successfully!`, 'success');
-            // existingComponents.push({...newComponent, _id: data._id});
-            loadComponents(); // Reload list
-            resetComponentForm();
-        })
-        .catch(error => {
-            console.error('Error adding component:', error);
-            showNotification(`Error adding component: ${error.message}`, 'error');
-        });
+        .then(response => { ... })
+        .catch(error => { ... });
         */
-
-        // For simulation
         existingComponents.push(newComponent);
         loadComponents();
         showNotification(`Component "${name}" added successfully! (Simulated)`, 'success');
@@ -884,7 +832,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // --- SIMULATED ADD PRODUCT ---
         const newProduct = {
             _id: `prod_${Date.now()}`,
             name: name,
@@ -894,32 +841,16 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         console.log('Adding product (simulated):', newProduct);
+        // Example API call:
         /*
         fetch(`${API_BASE_URL}/api/products`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // 'Authorization': `Bearer ${authToken}`
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newProduct)
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to add product');
-            return response.json();
-        })
-        .then(data => {
-            showNotification(`Product "${name}" added successfully!`, 'success');
-            // existingProducts.push({...newProduct, _id: data._id});
-            loadProducts(); // Reload list
-            resetProductForm();
-        })
-        .catch(error => {
-            console.error('Error adding product:', error);
-            showNotification(`Error adding product: ${error.message}`, 'error');
-        });
+        .then(response => { ... })
+        .catch(error => { ... });
         */
-
-        // For simulation
         existingProducts.push(newProduct);
         loadProducts();
         showNotification(`Product "${name}" added successfully! (Simulated)`, 'success');
@@ -941,13 +872,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- General Functions ---
-
-    function saveAllChanges() {
-        // This could save all visibility changes at once, or other global settings
-        // For now, it's just a placeholder as visibility is saved per toggle
-        showNotification('All changes saved successfully! (Simulated)', 'success');
-        console.log('Saving all changes (simulated)');
-    }
+    // function saveAllChanges() { ... } // Removed as per simplification
 
     function showNotification(message, type) {
         if (!notification) return;
@@ -960,7 +885,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
     }
 
-    // --- Initial Load for Active Section ---
-    // The "visibility" section is active by default, so load its data
-    // loadVisibilityData(); // Called in initialize
 });

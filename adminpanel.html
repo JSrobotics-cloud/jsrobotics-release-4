@@ -5,58 +5,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - JSrobotics</title>
-    <link rel="stylesheet" href="adminstyles.css">
+    <!-- Use the main stylesheet -->
     <link rel="stylesheet" href="styles.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Optional: Add specific admin styles if needed -->
+    <link rel="stylesheet" href="adminstyles.css">
 </head>
 <body>
-    <div id="admin-app">
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="nav-logo">
-                    <h1>JSrobotics</h1>
+    <!-- NAVIGATION - IDENTICAL TO OTHER PAGES -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>JSrobotics</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="courses.html" class="nav-link">Learning Center</a>
+                </li>
+                <li class="nav-item">
+                    <a href="library.html" class="nav-link">Component Library</a>
+                </li>
+                <li class="nav-item">
+                    <a href="marketplace.html" class="nav-link">Marketplace</a>
+                </li>
+                <li class="nav-item">
+                    <a href="projects.html" class="nav-link">Project Sharing</a>
+                </li>
+                 <!-- Admin Panel link - visibility controlled by script.js -->
+                <li class="nav-item">
+                    <a href="adminpanel.html" class="nav-link active">Admin Panel</a>
+                </li>
+            </ul>
+            <div class="nav-auth">
+                <button id="lang-toggle" class="btn btn-secondary">UZ</button>
+                 <!-- Auth buttons and user menu are handled by script.js -->
+                 <!-- These IDs must match those used in script.js -->
+                <div id="auth-buttons">
+                    <button id="login-btn" class="btn btn-primary">Sign In</button>
+                    <button id="signup-btn" class="btn btn-secondary">Sign Up</button>
                 </div>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="index.html" class="nav-link">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="courses.html" class="nav-link">Learning Center</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="library.html" class="nav-link">Component Library</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="marketplace.html" class="nav-link">Marketplace</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="projects.html" class="nav-link">Project Sharing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="adminpanel.html" class="nav-link active">Admin Panel</a>
-                    </li>
-                </ul>
-                <div class="nav-auth">
-                    <button id="lang-toggle" class="btn btn-secondary">UZ</button>
-                    <div id="admin-user-menu">
-                        <span id="admin-user-name">Admin Pro Max<i class="fa-regular fa-face-smile-wink"></i></span>
-                        <button id="admin-logout-btn" class="btn btn-outline">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
+                <div id="user-menu" class="hidden">
+                    <span id="user-name">John Doe</span>
+                    <span id="user-points">1250 pts</span>
+                    <button id="logout-btn" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
                 </div>
             </div>
-        </nav>
+        </div>
+    </nav>
+    <!-- END NAVIGATION -->
 
+    <main class="main-content">
         <div class="admin-container">
             <div class="admin-header">
                 <h1>Admin Dashboard</h1>
-                <div class="admin-actions">
-                    <button id="save-all-btn" class="btn btn-success">
-                        <i class="fas fa-save"></i> Save All Changes
-                    </button>
-                </div>
             </div>
 
             <div class="notification" id="notification"></div>
@@ -74,12 +85,12 @@
                 <p>Control which existing items appear on the homepage</p>
 
                 <h3>Featured Courses</h3>
-                <div class="item-list" id="featured-courses-list">
+                <div class="item-list-small" id="featured-courses-list">
                     <!-- Featured courses will be loaded here dynamically -->
                 </div>
 
                 <h3 style="margin-top: 30px;">Popular Projects</h3>
-                <div class="item-list" id="popular-projects-list">
+                <div class="item-list-small" id="popular-projects-list">
                     <!-- Popular projects will be loaded here dynamically -->
                 </div>
             </section>
@@ -87,7 +98,7 @@
             <!-- Course Builder Section -->
             <section id="course-builder-section" class="admin-section">
                 <h2>Create New Course</h2>
-
+                <!-- ... (rest of the form remains the same) ... -->
                 <div class="form-group">
                     <label for="new-course-title">Course Title *</label>
                     <input type="text" id="new-course-title" placeholder="Introduction to Robotics" required>
@@ -127,7 +138,7 @@
                         <input type="file" id="new-course-image-file" class="file-input" accept="image/*">
                     </div>
                     <div class="upload-status" id="course-image-upload-status">No file selected</div>
-                    <input type="hidden" id="new-course-image-url">
+                    <input type="hidden" id="new-course-image-url"> <!-- Hidden field to store uploaded URL -->
                 </div>
 
                 <h3>Course Sections & Lessons</h3>
@@ -157,7 +168,7 @@
                                         <input type="file" class="lesson-video-file file-input" accept="video/*">
                                     </div>
                                     <div class="upload-status lesson-video-upload-status">No file selected</div>
-                                    <input type="hidden" class="lesson-video-url">
+                                    <input type="hidden" class="lesson-video-url"> <!-- Hidden field for URL -->
                                 </div>
                                 <div class="form-group">
                                     <label>Lesson Content *</label>
@@ -214,7 +225,7 @@
                         <input type="file" id="component-image-file" class="file-input" accept="image/*">
                     </div>
                     <div class="upload-status" id="component-image-upload-status">No file selected</div>
-                    <input type="hidden" id="component-image-url">
+                    <input type="hidden" id="component-image-url"> <!-- Hidden field to store uploaded URL -->
                 </div>
 
                 <button id="add-component-btn" class="btn btn-primary">Add Component</button>
@@ -254,7 +265,7 @@
                         <input type="file" id="product-image-file" class="file-input" accept="image/*">
                     </div>
                     <div class="upload-status" id="product-image-upload-status">No file selected</div>
-                    <input type="hidden" id="product-image-url">
+                    <input type="hidden" id="product-image-url"> <!-- Hidden field to store uploaded URL -->
                 </div>
 
                 <button id="add-product-btn" class="btn btn-primary">Add Product</button>
@@ -265,45 +276,46 @@
                 </div>
             </section>
         </div>
+    </main>
 
-        <footer class="footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>JSrobotics</h3>
-                    <p>Empowering the next generation of robotics innovators through education and collaboration.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Learn</h4>
-                    <ul>
-                        <li><a href="#">Courses</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">Articles</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Community</h4>
-                    <ul>
-                        <li><a href="#">Projects</a></li>
-                        <li><a href="#">Forums</a></li>
-                        <li><a href="#">Events</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
-                </div>
+    <!-- FOOTER - IDENTICAL TO OTHER PAGES -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>JSrobotics</h3>
+                <p>Empowering the next generation of robotics innovators through education and collaboration.</p>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 JSrobotics. All rights reserved.</p>
+            <div class="footer-section">
+                <h4>Learn</h4>
+                <ul>
+                    <li><a href="#">Courses</a></li>
+                    <li><a href="#">Tutorials</a></li>
+                    <li><a href="#">Articles</a></li>
+                </ul>
             </div>
-        </footer>
-    </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="#">Projects</a></li>
+                    <li><a href="#">Forums</a></li>
+                    <li><a href="#">Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 JSrobotics. All rights reserved.</p>
+        </div>
+    </footer>
+    <!-- END FOOTER -->
 
     <script src="admin.js"></script>
-    <script src="script.js"></script>
 </body>
 </html>
