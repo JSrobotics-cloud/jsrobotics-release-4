@@ -197,7 +197,7 @@ async function checkExistingSession() {
 
 
 // Login Form Submission
-loginForm.addEventListener('submit', async function(e) {
+loginForm?.addEventListener('submit', async function(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
