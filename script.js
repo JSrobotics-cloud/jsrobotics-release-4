@@ -294,7 +294,7 @@ loginForm.addEventListener('submit', async function(e) {
     });
 
     // Logout
-logoutBtn.addEventListener('click', function() {
+logoutBtn?.addEventListener('click', function() {
     localStorage.removeItem('token');
     localStorage.removeItem('userData'); // Remove stored user data including isAdmin
     currentUser = null;
