@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // --- Configuration ---
     // TODO: Update to your actual backend URL
-    const API_BASE_URL = 'https://jsrobotics-backend-y77j.onrender.com'; // Or http://localhost:3000 for local dev
+    const API_BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // Or http://localhost:3000 for local dev
 
     // --- DOM Elements ---
     const navButtons = document.querySelectorAll('.admin-nav button');
