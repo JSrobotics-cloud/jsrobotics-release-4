@@ -251,7 +251,7 @@ loginForm.addEventListener('submit', async function(e) {
         updateAuthUI();
         closeModals();
         console.log('Login successful:', data);
-        alert('Login successful!');
+
 
     } catch (error) {
         console.error('Login Error:', error);
