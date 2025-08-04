@@ -204,7 +204,7 @@ loginForm.addEventListener('submit', async function(e) {
 
     // --- CHANGE THIS BASE_URL TO MATCH YOUR ACTUAL BACKEND ---
     // const BASE_URL = 'http://localhost:3000'; // <--- For local development
-    const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- UPDATE THIS TO YOUR ACTUAL DEPLOYED BACKEND URL
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- UPDATE THIS TO YOUR ACTUAL DEPLOYED BACKEND URL
 
     try {
         const response = await fetch(`${BASE_URL}/api/auth/login`, {
