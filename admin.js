@@ -476,4 +476,491 @@ document.addEventListener('DOMContentLoaded', function () {
                     newLessonContainer.removeChild(this.closest('.lesson-item'));
                     renumberLessonsInSection(newLessonContainer);
                 } else {
-                    show
+                    showNotification('Cannot remove the last lesson in a section', 'error');
+                }
+            });
+        }
+
+        // Setup file drop for the new lesson video
+        const videoDropArea = sectionItem.querySelector('.lesson-video-drop-area');
+        const videoFileInput = sectionItem.querySelector('.lesson-video-file');
+        const videoStatus = sectionItem.querySelector('.lesson-video-upload-status');
+        const videoHiddenInput = sectionItem.querySelector('.lesson-video-url');
+
+        if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
+            setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+        }
+    }
+
+    function addLessonToSection(lessonsContainer) {
+        const lessonCount = lessonsContainer.children.length + 1;
+        const lessonItem = document.createElement('div');
+        lessonItem.className = 'lesson-item';
+        lessonItem.innerHTML = `
+            <div class="lesson-header">
+                <h4>Lesson ${lessonCount}</h4>
+                <button class="btn btn-danger remove-lesson-btn">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Lesson Title *</label>
+                <input type="text" class="lesson-title" placeholder="New Lesson" required>
+            </div>
+            <div class="form-group">
+                <label>Lesson Video</label>
+                <div class="file-input-container lesson-video-drop-area">
+                    <i class="fas fa-file-video"></i>
+                    <p>Drag & drop a video here or click to browse</p>
+                    <input type="file" class="lesson-video-file file-input" accept="video/*">
+                </div>
+                <div class="upload-status lesson-video-upload-status">No file selected</div>
+                <input type="hidden" class="lesson-video-url">
+            </div>
+            <div class="form-group">
+                <label>Lesson Content *</label>
+                <textarea class="lesson-content" placeholder="Lesson content..." required></textarea>
+            </div>
+        `;
+        lessonsContainer.appendChild(lessonItem);
+
+        // Add event listener to new remove button
+        const removeBtn = lessonItem.querySelector('.remove-lesson-btn');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function () {
+                lessonsContainer.removeChild(lessonItem);
+                renumberLessonsInSection(lessonsContainer);
+            });
+        }
+
+        // Setup file drop for the new lesson video
+        const videoDropArea = lessonItem.querySelector('.lesson-video-drop-area');
+        const videoFileInput = lessonItem.querySelector('.lesson-video-file');
+        const videoStatus = lessonItem.querySelector('.lesson-video-upload-status');
+        const videoHiddenInput = lessonItem.querySelector('.lesson-video-url');
+
+        if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
+            setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+        }
+    }
+
+    function setupFileDropAreaForLesson(dropArea, fileInput, statusElement, hiddenInput) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.style.borderColor = '#3b82f6';
+            dropArea.style.backgroundColor = '#eff6ff';
+        }
+
+        function unhighlight() {
+            dropArea.style.borderColor = '#cbd5e1';
+            dropArea.style.backgroundColor = '';
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', handleFiles);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFilesGeneric(files, statusElement, hiddenInput);
+        }
+
+        function handleFiles() {
+            const files = this.files;
+            handleFilesGeneric(files, statusElement, hiddenInput);
+        }
+    }
+
+    function renumberLessonsInSection(lessonsContainer) {
+        const lessons = lessonsContainer.querySelectorAll('.lesson-item');
+        lessons.forEach((lesson, index) => {
+            const header = lesson.querySelector('.lesson-header h4');
+            if (header) header.textContent = `Lesson ${index + 1}`;
+        });
+    }
+
+    function publishCourse() {
+        const title = document.getElementById('new-course-title')?.value;
+        const courseId = document.getElementById('new-course-id')?.value;
+        const level = document.getElementById('new-course-level')?.value;
+        const duration = document.getElementById('new-course-duration')?.value;
+        const description = document.getElementById('new-course-description')?.value;
+        const imageUrl = document.getElementById('new-course-image-url')?.value;
+
+        if (!title || !courseId || !description) {
+            showNotification('Please fill in all required fields (*)', 'error');
+            return;
+        }
+
+        // Collect sections and lessons
+        const sectionsData = [];
+        const sectionItems = document.querySelectorAll('.section-item');
+
+        let isValid = true;
+        sectionItems.forEach((sectionItem, sectionIndex) => {
+            const sectionTitle = sectionItem.querySelector('.section-title')?.value;
+            if (!sectionTitle) {
+                showNotification(`Please enter a title for Section ${sectionIndex + 1}`, 'error');
+                isValid = false;
+                return;
+            }
+
+            const lessons = [];
+            const lessonItems = sectionItem.querySelectorAll('.lesson-item');
+            lessonItems.forEach((lessonItem, lessonIndex) => {
+                const lessonTitle = lessonItem.querySelector('.lesson-title')?.value;
+                const lessonContent = lessonItem.querySelector('.lesson-content')?.value;
+                const lessonVideoUrl = lessonItem.querySelector('.lesson-video-url')?.value;
+
+                if (!lessonTitle || !lessonContent) {
+                    showNotification(`Please fill in all required fields for Lesson ${lessonIndex + 1} in Section ${sectionIndex + 1}`, 'error');
+                    isValid = false;
+                    return;
+                }
+
+                lessons.push({
+                    title: lessonTitle,
+                    content: lessonContent,
+                    videoUrl: lessonVideoUrl || null
+                });
+            });
+
+            if (!isValid) return;
+
+            sectionsData.push({
+                title: sectionTitle,
+                lessons: lessons
+            });
+        });
+
+        if (!isValid) return;
+
+        if (sectionsData.length === 0) {
+            showNotification('Please add at least one section with lessons', 'error');
+            return;
+        }
+
+        // Prepare course data
+        const newCourse = {
+            courseId: courseId,
+            title: title,
+            level: level,
+            duration: duration,
+            description: description,
+            image: imageUrl,
+            sections: sectionsData,
+            featured: false // New courses are not featured by default
+        };
+
+        // --- SIMULATED PUBLISH ---
+        // In a real app, you would send this data to your backend API
+        console.log('Publishing course (simulated):', newCourse);
+        /*
+        fetch(`${API_BASE_URL}/api/courses`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': `Bearer ${authToken}` // Include auth if needed
+            },
+            body: JSON.stringify(newCourse)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to publish course');
+            return response.json();
+        })
+        .then(data => {
+            showNotification(`Course "${title}" published successfully!`, 'success');
+            // Optionally, add to local list or reload
+            // existingCourses.push({...newCourse, _id: data._id});
+            resetCourseBuilder();
+        })
+        .catch(error => {
+            console.error('Error publishing course:', error);
+            showNotification(`Error publishing course: ${error.message}`, 'error');
+        });
+        */
+
+        // For simulation
+        showNotification(`Course "${title}" published successfully! (Simulated)`, 'success');
+        console.log("Published Course Data:", newCourse);
+        resetCourseBuilder();
+    }
+
+    function resetCourseBuilder() {
+        const fields = [
+            'new-course-title', 'new-course-id', 'new-course-description',
+            'new-course-image-url'
+        ];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+        const statusFields = [
+            'course-image-upload-status'
+        ];
+        statusFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = 'No file selected';
+                el.className = 'upload-status';
+            }
+        });
+
+        // Reset sections to initial state
+        const sectionsContainer = document.getElementById('sections-container');
+        if (sectionsContainer) {
+            sectionsContainer.innerHTML = `
+                <div class="section-item">
+                    <div class="form-group">
+                        <label>Section Title *</label>
+                        <input type="text" class="section-title" placeholder="Getting Started" required>
+                    </div>
+                    <div class="lessons-container">
+                        <div class="lesson-item">
+                            <div class="lesson-header">
+                                <h4>Lesson 1</h4>
+                                <button class="btn btn-danger remove-lesson-btn">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label>Lesson Title *</label>
+                                <input type="text" class="lesson-title" placeholder="Introduction to Arduino" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Lesson Video</label>
+                                <div class="file-input-container lesson-video-drop-area">
+                                    <i class="fas fa-file-video"></i>
+                                    <p>Drag & drop a video here or click to browse</p>
+                                    <input type="file" class="lesson-video-file file-input" accept="video/*">
+                                </div>
+                                <div class="upload-status lesson-video-upload-status">No file selected</div>
+                                <input type="hidden" class="lesson-video-url">
+                            </div>
+                            <div class="form-group">
+                                <label>Lesson Content *</label>
+                                <textarea class="lesson-content" placeholder="In this lesson, you will learn..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary add-lesson-btn">
+                        <i class="fas fa-plus"></i> Add Lesson
+                    </button>
+                </div>
+            `;
+
+            // Re-attach event listeners for the reset section
+            const firstSection = sectionsContainer.querySelector('.section-item');
+            if (firstSection) {
+                const addLessonBtn = firstSection.querySelector('.add-lesson-btn');
+                const removeLessonBtn = firstSection.querySelector('.remove-lesson-btn');
+                const lessonsContainer = firstSection.querySelector('.lessons-container');
+
+                if (addLessonBtn && lessonsContainer) {
+                    addLessonBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        addLessonToSection(lessonsContainer);
+                    });
+                }
+
+                if (removeLessonBtn && lessonsContainer) {
+                    removeLessonBtn.addEventListener('click', function () {
+                        if (lessonsContainer.children.length > 1) {
+                            lessonsContainer.removeChild(this.closest('.lesson-item'));
+                            renumberLessonsInSection(lessonsContainer);
+                        } else {
+                            showNotification('Cannot remove the last lesson in a section', 'error');
+                        }
+                    });
+                }
+
+                // Setup file drop for the lesson video in the reset section
+                const videoDropArea = firstSection.querySelector('.lesson-video-drop-area');
+                const videoFileInput = firstSection.querySelector('.lesson-video-file');
+                const videoStatus = firstSection.querySelector('.lesson-video-upload-status');
+                const videoHiddenInput = firstSection.querySelector('.lesson-video-url');
+
+                if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
+                    setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+                }
+            }
+        }
+    }
+
+    // --- Components & Products ---
+
+    function addComponent() {
+        const name = document.getElementById('component-name')?.value;
+        const category = document.getElementById('component-category')?.value;
+        const description = document.getElementById('component-description')?.value;
+        const imageUrl = document.getElementById('component-image-url')?.value;
+
+        if (!name || !description) {
+            showNotification('Please fill in all required fields (*)', 'error');
+            return;
+        }
+
+        // --- SIMULATED ADD COMPONENT ---
+        const newComponent = {
+            _id: `comp_${Date.now()}`,
+            name: name,
+            category: category,
+            description: description,
+            image: imageUrl || 'https://placehold.co/150x150/94a3b8/ffffff?text=Component'
+        };
+
+        console.log('Adding component (simulated):', newComponent);
+        /*
+        fetch(`${API_BASE_URL}/api/components`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(newComponent)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to add component');
+            return response.json();
+        })
+        .then(data => {
+            showNotification(`Component "${name}" added successfully!`, 'success');
+            // existingComponents.push({...newComponent, _id: data._id});
+            loadComponents(); // Reload list
+            resetComponentForm();
+        })
+        .catch(error => {
+            console.error('Error adding component:', error);
+            showNotification(`Error adding component: ${error.message}`, 'error');
+        });
+        */
+
+        // For simulation
+        existingComponents.push(newComponent);
+        loadComponents();
+        showNotification(`Component "${name}" added successfully! (Simulated)`, 'success');
+        resetComponentForm();
+    }
+
+    function resetComponentForm() {
+        const fields = ['component-name', 'component-description', 'component-image-url'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+        const statusEl = document.getElementById('component-image-upload-status');
+        if (statusEl) {
+            statusEl.textContent = 'No file selected';
+            statusEl.className = 'upload-status';
+        }
+    }
+
+    function addProduct() {
+        const name = document.getElementById('product-name')?.value;
+        const price = parseFloat(document.getElementById('product-price')?.value);
+        const description = document.getElementById('product-description')?.value;
+        const imageUrl = document.getElementById('product-image-url')?.value;
+
+        if (!name || isNaN(price) || !description) {
+            showNotification('Please fill in all required fields (*)', 'error');
+            return;
+        }
+
+        // --- SIMULATED ADD PRODUCT ---
+        const newProduct = {
+            _id: `prod_${Date.now()}`,
+            name: name,
+            price: price,
+            description: description,
+            image: imageUrl || 'https://placehold.co/200x200/94a3b8/ffffff?text=Product'
+        };
+
+        console.log('Adding product (simulated):', newProduct);
+        /*
+        fetch(`${API_BASE_URL}/api/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify(newProduct)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to add product');
+            return response.json();
+        })
+        .then(data => {
+            showNotification(`Product "${name}" added successfully!`, 'success');
+            // existingProducts.push({...newProduct, _id: data._id});
+            loadProducts(); // Reload list
+            resetProductForm();
+        })
+        .catch(error => {
+            console.error('Error adding product:', error);
+            showNotification(`Error adding product: ${error.message}`, 'error');
+        });
+        */
+
+        // For simulation
+        existingProducts.push(newProduct);
+        loadProducts();
+        showNotification(`Product "${name}" added successfully! (Simulated)`, 'success');
+        resetProductForm();
+    }
+
+    function resetProductForm() {
+        const fields = ['product-name', 'product-price', 'product-description', 'product-image-url'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+
+        const statusEl = document.getElementById('product-image-upload-status');
+        if (statusEl) {
+            statusEl.textContent = 'No file selected';
+            statusEl.className = 'upload-status';
+        }
+    }
+
+    // --- General Functions ---
+
+    function saveAllChanges() {
+        // This could save all visibility changes at once, or other global settings
+        // For now, it's just a placeholder as visibility is saved per toggle
+        showNotification('All changes saved successfully! (Simulated)', 'success');
+        console.log('Saving all changes (simulated)');
+    }
+
+    function showNotification(message, type) {
+        if (!notification) return;
+        notification.textContent = message;
+        notification.className = `notification ${type}`;
+        notification.style.display = 'block';
+
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+
+    // --- Initial Load for Active Section ---
+    // The "visibility" section is active by default, so load its data
+    // loadVisibilityData(); // Called in initialize
+});
