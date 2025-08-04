@@ -78,7 +78,7 @@
         }
         
         .form-group textarea {
-            min-height: 150px;
+            min-height: 100px;
             resize: vertical;
         }
         
@@ -129,54 +129,73 @@
             background-color: #059669;
         }
         
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        
         .btn-block {
             width: 100%;
             margin-bottom: 15px;
         }
         
-        .course-list {
+        .course-list, .project-list, .component-list, .product-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
         
-        .course-card {
+        .item-card {
             background: white;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            position: relative;
         }
         
-        .course-card:hover {
+        .item-card:hover {
             transform: translateY(-5px);
         }
         
-        .course-card img {
+        .item-card img {
             width: 100%;
             height: 150px;
             object-fit: cover;
         }
         
-        .course-card-content {
+        .item-card-content {
             padding: 15px;
         }
         
-        .course-card-content h3 {
+        .item-card-content h3 {
             margin: 0 0 10px 0;
             color: #1e293b;
+            font-size: 1.1rem;
         }
         
-        .course-card-content p {
+        .item-card-content p {
             color: #64748b;
             font-size: 0.9rem;
             margin-bottom: 15px;
         }
         
-        .course-actions {
+        .item-actions {
             display: flex;
             gap: 10px;
+            padding: 0 15px 15px 15px;
+        }
+        
+        .toggle-visibility {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
         }
         
         .lesson-item {
@@ -229,4 +248,51 @@
             background-color: #fee2e2;
             color: #991b1b;
             border: 1px solid #ef4444;
+        }
+        
+        .file-input-container {
+            border: 2px dashed #cbd5e1;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .file-input-container:hover {
+            border-color: #3b82f6;
+        }
+        
+        .file-input-container p {
+            margin: 0;
+            color: #64748b;
+        }
+        
+        .file-input-container i {
+            font-size: 2rem;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-status {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+        
+        .upload-status.uploading {
+            color: #f59e0b;
+        }
+        
+        .upload-status.success {
+            color: #10b981;
+        }
+        
+        .upload-status.error {
+            color: #ef4444;
         }
