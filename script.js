@@ -31,6 +31,7 @@ function updateNavigationForAdmin(isAdmin) {
 
     if (isAdmin && !existingAdminLink) {
         // User is an admin and link doesn't exist, add it
+        console.log("Adding Admin Panel link to navigation.");
         if (projectSharingLink) {
             const adminListItem = document.createElement('li');
             adminListItem.className = 'nav-item';
@@ -39,6 +40,7 @@ function updateNavigationForAdmin(isAdmin) {
             projectSharingLink.parentElement.after(adminListItem);
         } else {
             // Fallback: append to end if Project Sharing not found
+            console.warn("Project Sharing link not found, appending Admin Panel to end.");
             const adminListItem = document.createElement('li');
             adminListItem.className = 'nav-item';
             adminListItem.innerHTML = '<a href="adminpanel.html" class="nav-link">Admin Panel</a>';
@@ -46,10 +48,13 @@ function updateNavigationForAdmin(isAdmin) {
         }
     } else if (!isAdmin && existingAdminLink) {
         // User is not an admin but link exists, remove it
+        console.log("Removing Admin Panel link from navigation.");
         const adminListItem = existingAdminLink.parentElement;
-        if (adminListItem) {
+        if (adminListItem && navMenu) {
             navMenu.removeChild(adminListItem);
         }
+    } else {
+        // console.log(`No navigation update needed. isAdmin: ${isAdmin}, linkExists: ${!!existingAdminLink}`);
     }
 }
 
@@ -115,13 +120,14 @@ async function checkExistingSession() {
             // Parse stored user data (including isAdmin)
             const userData = JSON.parse(userDataJson);
             currentUser = userData;
-            
+
             // --- UPDATE NAVIGATION BASED ON STORED DATA ---
             updateNavigationForAdmin(userData.isAdmin);
 
-            // Optionally, verify the token with the backend for security
-            // (Implementation depends on your backend's /api/verify or similar endpoint)
+            // Optionally, verify the token with the backend for better security
+            // (Implementation depends on your backend's /api/auth/verify or similar endpoint)
             /*
+            const BASE_URL = 'https://jsrobotics-backend-y77j.onrender.com'; // <--- UPDATE THIS TO YOUR ACTUAL DEPLOYED BACKEND URL
             const response = await fetch(`${BASE_URL}/api/auth/verify`, {
                 method: 'GET',
                 headers: {
@@ -142,14 +148,18 @@ async function checkExistingSession() {
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
             currentUser = null;
+            // Ensure admin link is removed if data was corrupted
+            updateNavigationForAdmin(false);
         }
     } else if (token) {
-         // Fallback if userData wasn't stored correctly
-         localStorage.removeItem('token');
+        // Fallback if userData wasn't stored correctly
+        console.warn("Token found but no userData, removing token.");
+        localStorage.removeItem('token');
+        updateNavigationForAdmin(false); // Ensure no admin link
     }
     // If no token, ensure no admin link is shown
     if (!token) {
-         updateNavigationForAdmin(false);
+        updateNavigationForAdmin(false);
     }
 }
 
@@ -185,14 +195,16 @@ async function checkExistingSession() {
         langToggle.textContent = language === 'en' ? 'UZ' : 'EN';
     });
 
-    // Login Form Submission
+
+// Login Form Submission
 loginForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    // --- CHANGE THIS BASE_URL TO MATCH YOUR BACKEND ---
-    const BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // <--- Update this to your actual backend URL
+    // --- CHANGE THIS BASE_URL TO MATCH YOUR ACTUAL BACKEND ---
+    // const BASE_URL = 'http://localhost:3000'; // <--- For local development
+    const BASE_URL = 'https://jsrobotics-release-4.vercel.app/'; // <--- UPDATE THIS TO YOUR ACTUAL DEPLOYED BACKEND URL
 
     try {
         const response = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -205,7 +217,7 @@ loginForm.addEventListener('submit', async function(e) {
 
         let data;
         const contentType = response.headers.get("content-type");
-        
+
         // Check if the response is JSON
         if (contentType && contentType.indexOf("application/json") !== -1) {
             data = await response.json();
@@ -219,17 +231,18 @@ loginForm.addEventListener('submit', async function(e) {
         }
 
         // --- ADMIN CHECK ---
-        // Define your list of admin emails (in a real app, this check should happen on the backend)
-        const ADMIN_EMAILS = ['js.robotics24@gmail.com', 'itspecialist2200@gmail.com']; // Add your actual admin emails
+        // Define your list of admin emails
+        // TODO: In a more secure setup, the backend would determine this and send it in the response
+        const ADMIN_EMAILS = ['admin@example.com', 'genz101.uz@gmail.com']; // Add your actual admin emails here
         const isAdmin = ADMIN_EMAILS.includes(data.user.email);
 
-        // Store token and user data in localStorage
+        // Success - Store token and user data in localStorage
         localStorage.setItem('token', data.token);
-        localStorage.setItem('userData', JSON.stringify({...data.user, isAdmin: isAdmin})); // Store isAdmin status
+        localStorage.setItem('userData', JSON.stringify({ ...data.user, isAdmin: isAdmin })); // Store isAdmin status
 
         // Update global currentUser variable
         currentUser = data.user;
-        currentUser.isAdmin = isAdmin; // Attach isAdmin to currentUser object
+        currentUser.isAdmin = isAdmin; // Attach isAdmin to currentUser object for immediate use
 
         // --- UPDATE NAVIGATION ---
         updateNavigationForAdmin(isAdmin);
