@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const response = await fetch(`${API_BASE_URL}/api/upload`, { // You need to implement this endpoint
                 method: 'POST',
-                // IMPORTANT: Do not set Content-Type header when using FormData
+
                 // It will be set automatically with the correct boundary
                 // headers: { 'Content-Type': 'multipart/form-data' }, // REMOVE THIS
                 body: formData,
