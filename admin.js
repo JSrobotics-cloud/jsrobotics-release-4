@@ -1,7 +1,12 @@
 // admin.js
+
+// --- Configuration ---
+// Use relative path if adminpanel.html and API are on the same Vercel project
 const API_BASE_URL = '';
+// For local development: const API_BASE_URL = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', function () {
+    // --- DOM Elements ---
     const navButtons = document.querySelectorAll('.admin-nav button');
     const sections = document.querySelectorAll('.admin-section');
     const notification = document.getElementById('notification');
@@ -10,8 +15,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const addComponentBtn = document.getElementById('add-component-btn');
     const addProductBtn = document.getElementById('add-product-btn');
 
+    // --- State Management ---
     let authToken = localStorage.getItem('token');
+    let allCourses = [];
 
+    // --- Initialize ---
     if (!authToken) {
         showNotification('Authentication required. Please log in.', 'error');
         return;
@@ -19,22 +27,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setupNavigation();
     setupEventListeners();
-    setupFileUploads();
-    loadVisibilityData();
+    setupFileUploads(); // Setup static and initial dynamic file inputs
+    loadVisibilityData(); // Load data for the default active "visibility" section
+
+    // --- Functions ---
 
     function setupNavigation() {
         navButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const sectionId = button.getAttribute('data-section');
+
                 navButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
+
                 sections.forEach(section => {
                     section.classList.remove('active');
                     if (section.id === `${sectionId}-section`) {
                         section.classList.add('active');
                     }
                 });
-                if (sectionId === 'visibility') loadVisibilityData();
+
+                if (sectionId === 'visibility') {
+                    loadVisibilityData();
+                } else if (sectionId === 'components') {
+                    // loadComponents(); // Implement if needed
+                } else if (sectionId === 'marketplace') {
+                    // loadProducts(); // Implement if needed
+                }
             });
         });
     }
@@ -45,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (addComponentBtn) addComponentBtn.addEventListener('click', addComponent);
         if (addProductBtn) addProductBtn.addEventListener('click', addProduct);
     }
+
+    // --- File Uploads ---
 
     function setupFileDropArea(dropAreaId, inputId, statusId, hiddenInputId) {
         const dropArea = document.getElementById(dropAreaId);
@@ -57,66 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const newFileInput = fileInput.cloneNode(true);
-        fileInput.parentNode.replaceChild(newFileInput, fileInput);
-
-        const preventDefaults = (e) => { e.preventDefault(); e.stopPropagation(); };
-        const highlight = () => { dropArea.style.borderColor = '#3b82f6'; dropArea.style.backgroundColor = '#eff6ff'; };
-        const unhighlight = () => { dropArea.style.borderColor = '#cbd5e1'; dropArea.style.backgroundColor = ''; };
-
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-        });
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
-
-        dropArea.addEventListener('drop', handleDrop, false);
-        newFileInput.addEventListener('change', handleFiles, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            handleFilesGeneric(files, status, hiddenInput);
-        }
-
-        function handleFiles() {
-            const files = this.files;
-            handleFilesGeneric(files, status, hiddenInput);
-        }
-    }
-
-    function setupFileUploads() {
-        setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
-        setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
-        setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
-
-        const sectionsContainer = document.getElementById('sections-container');
-        if (sectionsContainer && sectionsContainer.firstElementChild) {
-            const firstSectionItem = sectionsContainer.firstElementChild;
-            const lessonsContainer = firstSectionItem.querySelector('.lessons-container');
-            if (lessonsContainer && lessonsContainer.firstElementChild) {
-                const firstLessonItem = lessonsContainer.firstElementChild;
-                const videoDropArea = firstLessonItem.querySelector('.lesson-video-drop-area');
-                const videoFileInput = firstLessonItem.querySelector('.lesson-video-file');
-                const videoStatus = firstLessonItem.querySelector('.lesson-video-upload-status');
-                const videoHiddenInput = firstLessonItem.querySelector('.lesson-video-url');
-                if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-                    setupLessonVideoUpload(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
-                }
-            }
-        }
-    }
-
-    function setupLessonVideoUpload(dropArea, fileInput, statusElement, hiddenInputElement) {
-        if (!dropArea || !fileInput || !statusElement || !hiddenInputElement) {
-            console.warn("setupLessonVideoUpload: Missing element references");
-            return;
-        }
-
+        // Prevent duplicate listeners by cloning
         const newFileInput = fileInput.cloneNode(true);
         fileInput.parentNode.replaceChild(newFileInput, fileInput);
 
@@ -143,15 +105,44 @@ document.addEventListener('DOMContentLoaded', function () {
         dropArea.addEventListener('drop', handleDrop, false);
         newFileInput.addEventListener('change', handleFiles, false);
 
+        // Make the drop area clickable to trigger file input
+        dropArea.addEventListener('click', () => {
+            newFileInput.click();
+        });
+
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
-            handleFilesGeneric(files, statusElement, hiddenInputElement);
+            handleFilesGeneric(files, status, hiddenInput);
         }
 
         function handleFiles() {
             const files = this.files;
-            handleFilesGeneric(files, statusElement, hiddenInputElement);
+            handleFilesGeneric(files, status, hiddenInput);
+        }
+    }
+
+    function setupFileUploads() {
+        // Static areas
+        setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
+        setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
+        setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
+
+        // Initial dynamic area (first lesson video in template)
+        const sectionsContainer = document.getElementById('sections-container');
+        if (sectionsContainer && sectionsContainer.firstElementChild) {
+            const firstLessonItem = sectionsContainer.firstElementChild
+                .querySelector('.lessons-container')
+                ?.firstElementChild;
+
+            if (firstLessonItem) {
+                setupFileDropArea(
+                    firstLessonItem.querySelector('.lesson-video-drop-area'),
+                    firstLessonItem.querySelector('.lesson-video-file'),
+                    firstLessonItem.querySelector('.lesson-video-upload-status'),
+                    firstLessonItem.querySelector('.lesson-video-url')
+                );
+            }
         }
     }
 
@@ -170,16 +161,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'Authorization': `Bearer ${authToken}` // <-- FIX: Include Authorization header
+                    'Authorization': `Bearer ${authToken}`
                 }
             });
 
             if (!response.ok) {
                 let errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.error || errorMessage;
-                } catch (e) {}
+                if (response.status === 413) {
+                     errorMessage = 'File too large. Please select a smaller file.';
+                } else {
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (e) { /* Ignore JSON parse error */ }
+                }
                 throw new Error(errorMessage);
             }
 
@@ -201,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function () {
             showNotification(`File upload failed: ${error.message}`, 'error');
         }
     }
+
+    // --- Course Builder Functions ---
 
     function addSection() {
         const sectionsContainer = document.getElementById('sections-container');
@@ -261,18 +258,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (removeLessonBtn) {
             removeLessonBtn.addEventListener('click', function () {
+                // Allow removing the last lesson
                 newLessonContainer.removeChild(this.closest('.lesson-item'));
                 renumberLessonsInSection(newLessonContainer);
             });
         }
 
+        // Setup file drop for the first lesson in this new section
         const videoDropArea = sectionItem.querySelector('.lesson-video-drop-area');
         const videoFileInput = sectionItem.querySelector('.lesson-video-file');
         const videoStatus = sectionItem.querySelector('.lesson-video-upload-status');
         const videoHiddenInput = sectionItem.querySelector('.lesson-video-url');
 
         if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-            setupLessonVideoUpload(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+            setupFileDropArea(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
         }
     }
 
@@ -316,13 +315,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
+        // Setup file drop for this new lesson
         const videoDropArea = lessonItem.querySelector('.lesson-video-drop-area');
         const videoFileInput = lessonItem.querySelector('.lesson-video-file');
         const videoStatus = lessonItem.querySelector('.lesson-video-upload-status');
         const videoHiddenInput = lessonItem.querySelector('.lesson-video-url');
 
         if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-            setupLessonVideoUpload(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+            setupFileDropArea(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
         }
     }
 
@@ -344,11 +344,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!title || !courseId || !description) {
             showNotification('Please fill in all required fields (*)', 'error');
-            return;
-        }
-
-        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(courseId)) {
-            showNotification('Course ID (slug) must be lowercase, use hyphens, and contain only letters and numbers', 'error');
             return;
         }
 
@@ -411,7 +406,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-            if (!authToken) throw new Error('Authentication token missing.');
             const response = await fetch(`${API_BASE_URL}/api/courses`, {
                 method: 'POST',
                 headers: {
@@ -426,13 +420,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (response.status === 409) {
                     showNotification(`Error: A course with ID '${courseId}' already exists.`, 'error');
                 } else {
-                    throw new Error(errorData.error || `Failed to publish course: ${response.status} ${response.statusText}`);
+                    throw new Error(errorData.error || `Failed to publish course: ${response.status}`);
                 }
                 return;
             }
 
             const createdCourse = await response.json();
-            console.log('Course published successfully:', createdCourse);
             showNotification(`Course "${title}" published successfully!`, 'success');
             resetCourseBuilder();
 
@@ -443,16 +436,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetCourseBuilder() {
-        const fieldsToReset = ['new-course-title', 'new-course-id', 'new-course-description', 'new-course-duration'];
-        fieldsToReset.forEach(id => {
+        // Reset form fields
+        ['new-course-title', 'new-course-id', 'new-course-description', 'new-course-duration'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
+        document.getElementById('new-course-level').selectedIndex = 0; // Reset select
 
-        const statusFields = [
+        // Reset file upload statuses and hidden inputs
+        [
             { statusId: 'course-image-upload-status', hiddenId: 'new-course-image-url' }
-        ];
-        statusFields.forEach(({ statusId, hiddenId }) => {
+        ].forEach(({ statusId, hiddenId }) => {
             const statusEl = document.getElementById(statusId);
             const hiddenEl = document.getElementById(hiddenId);
             if (statusEl) {
@@ -462,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (hiddenEl) hiddenEl.value = '';
         });
 
+        // Reset sections to initial state
         const sectionsContainer = document.getElementById('sections-container');
         if (sectionsContainer) {
             sectionsContainer.innerHTML = `
@@ -504,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
 
+            // Re-attach event listeners for the reset section
             const firstSection = sectionsContainer.querySelector('.section-item');
             if (firstSection) {
                 const addLessonBtn = firstSection.querySelector('.add-lesson-btn');
@@ -524,17 +520,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
 
+                // Setup file drop for the lesson video in the reset section
                 const videoDropArea = firstSection.querySelector('.lesson-video-drop-area');
                 const videoFileInput = firstSection.querySelector('.lesson-video-file');
                 const videoStatus = firstSection.querySelector('.lesson-video-upload-status');
                 const videoHiddenInput = firstSection.querySelector('.lesson-video-url');
 
                 if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-                    setupLessonVideoUpload(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+                    setupFileDropArea(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
                 }
             }
         }
     }
+
+    // --- Components & Products ---
 
     async function addComponent() {
         const name = document.getElementById('component-name')?.value.trim();
@@ -555,7 +554,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-            if (!authToken) throw new Error('Authentication token missing.');
             const response = await fetch(`${API_BASE_URL}/api/components`, {
                 method: 'POST',
                 headers: {
@@ -567,11 +565,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `Failed to add component: ${response.status} ${response.statusText}`);
+                throw new Error(errorData.error || `Failed to add component: ${response.status}`);
             }
 
             const createdComponent = await response.json();
-            console.log('Component added successfully:', createdComponent);
             showNotification(`Component "${name}" added successfully!`, 'success');
             resetComponentForm();
 
@@ -582,11 +579,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetComponentForm() {
-        const fieldsToReset = ['component-name', 'component-description'];
-        fieldsToReset.forEach(id => {
+        ['component-name', 'component-description'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
+        document.getElementById('component-category').selectedIndex = 0;
 
         const statusEl = document.getElementById('component-image-upload-status');
         const hiddenEl = document.getElementById('component-image-url');
@@ -616,7 +613,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-            if (!authToken) throw new Error('Authentication token missing.');
             const response = await fetch(`${API_BASE_URL}/api/products`, {
                 method: 'POST',
                 headers: {
@@ -628,11 +624,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `Failed to add product: ${response.status} ${response.statusText}`);
+                throw new Error(errorData.error || `Failed to add product: ${response.status}`);
             }
 
             const createdProduct = await response.json();
-            console.log('Product added successfully:', createdProduct);
             showNotification(`Product "${name}" added successfully!`, 'success');
             resetProductForm();
 
@@ -643,8 +638,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetProductForm() {
-        const fieldsToReset = ['product-name', 'product-price', 'product-description'];
-        fieldsToReset.forEach(id => {
+        ['product-name', 'product-price', 'product-description'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
@@ -658,9 +652,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (hiddenEl) hiddenEl.value = '';
     }
 
+    // --- Visibility Management ---
+
     async function loadVisibilityData() {
         try {
-            if (!authToken) throw new Error('Authentication token missing.');
             const response = await fetch(`${API_BASE_URL}/api/courses`, {
                 method: 'GET',
                 headers: {
@@ -674,6 +669,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const courses = await response.json();
+            allCourses = courses;
             loadFeaturedCourses(courses);
 
         } catch (error) {
@@ -703,9 +699,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const card = document.createElement('div');
         card.className = 'item-card-small';
 
-        const imageHtml = item.image ? `<img src="${item.image}" alt="${item.title || item.name}">` : '';
-        const titleHtml = `<h3>${item.title || item.name}</h3>`;
-        const descriptionHtml = item.description ? `<p>${item.description.substring(0, 60)}${item.description.length > 60 ? '...' : ''}</p>` : (item.author ? `<p>by ${item.author}</p>` : '');
+        const imageHtml = item.image ? `<img src="${item.image}" alt="${item.title}">` : '';
+        const titleHtml = `<h3>${item.title}</h3>`;
+        const descriptionHtml = item.description ? `<p>${item.description.substring(0, 60)}${item.description.length > 60 ? '...' : ''}</p>` : '';
 
         const isChecked = item.featured ? 'checked' : '';
         const actionsHtml = `
@@ -738,7 +734,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function toggleFeatured(id, type, isFeatured) {
-        console.log(`Toggling featured status for ${type} ID ${id} to ${isFeatured}`);
         if (type !== 'course') {
             showNotification(`Visibility toggle for ${type} not implemented yet.`, 'warning');
             return;
@@ -761,19 +756,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const updatedCourse = await response.json();
             console.log(`${type} visibility updated:`, updatedCourse);
+
+            // Update local state
+            const courseIndex = allCourses.findIndex(c => c._id === id);
+            if (courseIndex !== -1) {
+                allCourses[courseIndex].featured = isFeatured;
+            }
+
             showNotification(`${type} visibility updated successfully!`, 'success');
 
         } catch (error) {
             console.error(`Error updating ${type} visibility:`, error);
             showNotification(`Error updating ${type} visibility: ${error.message}`, 'error');
+            // Revert checkbox state on error? Optional.
         }
     }
+
+    // --- General Functions ---
 
     function showNotification(message, type) {
         if (!notification) return;
         notification.textContent = message;
         notification.className = `notification ${type}`;
         notification.style.display = 'block';
-        setTimeout(() => { notification.style.display = 'none'; }, 5000);
+
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000);
     }
+
 });
