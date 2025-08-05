@@ -12,7 +12,7 @@ your-project-root/
 │   ├── auth/
 │   │   ├── login.js
 │   │   └── register.js
-│   ├── courses/
+│   ├── courses/         !!!!!// this folder will be on render.com to handle larger files thatn 4.5mg like vercel limit 
 │   │   ├── index.js     // GET /api/courses
 │   │   ├── [id].js      // GET /api/courses/:id
 │   │   └── create.js    // POST /api/courses (handles course creation with video)
@@ -22,7 +22,7 @@ your-project-root/
 │   ├── components/
 │   │   ├── index.js     // GET /api/components
 │   │   └── create.js    // POST /api/components (handles component creation with image)
-│   ├── upload.js        // POST /api/upload (handles general file uploads)
+│   ├── upload.js        // POST /api/upload (handles general file uploads) !!! // and this will be on render.com too
 │   └── profile/
 │       ├── [id].js      // GET /api/profile/:id
 │       └── update.js    // PUT /api/profile (requires auth)
