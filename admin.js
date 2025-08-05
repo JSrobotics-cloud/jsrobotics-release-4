@@ -1,10 +1,10 @@
-
-const API_BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // Your Vercel frontend URL (if API is separate)
-
-
+// admin.js
+const API_BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 document.addEventListener('DOMContentLoaded', function () {
     // --- Configuration ---
-    // const API_BASE_URL is defined above
+    // TODO: Update to your actual backend URL
+    const API_BASE_URL = 'https://jsrobotics-release-4.vercel.app'; // Example, use your deployed backend URL
+    // const API_BASE_URL = 'http://localhost:3000'; // For local development
 
     // --- DOM Elements ---
     const navButtons = document.querySelectorAll('.admin-nav button');
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const publishCourseBtn = document.getElementById('publish-course-btn');
     const addComponentBtn = document.getElementById('add-component-btn');
     const addProductBtn = document.getElementById('add-product-btn');
-    // Assume logout is handled by script.js
 
     // --- State Management ---
     let authToken = localStorage.getItem('token'); // Get token from localStorage (set by script.js)
@@ -30,9 +29,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setupNavigation();
     setupEventListeners();
-    setupFileUploads(); // Setup static and initial dynamic file inputs
+    setupFileUploads();
     loadVisibilityData(); // Load data for the default active "visibility" section
-
 
     // --- Functions ---
 
@@ -53,13 +51,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                // Load data for the selected section if needed
+                // Load data for the selected section
                 if (sectionId === 'visibility') {
-                    loadVisibilityData();
+                    loadVisibilityData(); // This will now fetch from backend
                 } else if (sectionId === 'components') {
-                    loadComponents();
+                    loadComponents(); // TODO: Implement fetching components
                 } else if (sectionId === 'marketplace') {
-                    loadProducts();
+                    loadProducts(); // TODO: Implement fetching products
                 }
                 // 'course-builder' section doesn't need initial data loading
             });
@@ -71,54 +69,53 @@ document.addEventListener('DOMContentLoaded', function () {
         if (publishCourseBtn) publishCourseBtn.addEventListener('click', publishCourse);
         if (addComponentBtn) addComponentBtn.addEventListener('click', addComponent);
         if (addProductBtn) addProductBtn.addEventListener('click', addProduct);
-        // Logout is handled by script.js
     }
 
     // --- File Uploads ---
+    function setupFileUploads() {
+        // Setup for Create Course - Course Image
+        setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
 
-    // --- IMPROVED setupFileDropArea ---
+        // Setup for Create Course - Lesson Videos (initial setup for the first lesson)
+        const initialVideoDropArea = document.querySelector('.lesson-video-drop-area');
+        const initialVideoFileInput = document.querySelector('.lesson-video-file');
+        const initialVideoStatus = document.querySelector('.lesson-video-upload-status');
+        const initialVideoHiddenInput = document.querySelector('.lesson-video-url');
+        if (initialVideoDropArea && initialVideoFileInput && initialVideoStatus && initialVideoHiddenInput) {
+            setupFileDropArea(initialVideoDropArea.id, initialVideoFileInput.id, initialVideoStatus.id, initialVideoHiddenInput.id);
+        }
+
+        // Setup for Components - Image
+        setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
+
+        // Setup for Marketplace - Image
+        setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
+    }
+
     function setupFileDropArea(dropAreaId, inputId, statusId, hiddenInputId) {
-        // console.log(`Attempting to setup drop area: ${dropAreaId}, input: ${inputId}`); // Debug log
-
         const dropArea = document.getElementById(dropAreaId);
         const fileInput = document.getElementById(inputId);
         const status = document.getElementById(statusId);
         const hiddenInput = document.getElementById(hiddenInputId);
 
-        // Check if elements exist before proceeding
         if (!dropArea || !fileInput || !status || !hiddenInput) {
-             // This warning for initial template elements is often expected and harmless
-            console.warn("setupFileDropArea: Missing elements for IDs:", dropAreaId, inputId, statusId, hiddenInputId);
-            return false; // Indicate setup wasn't performed
+            console.warn("setupFileDropArea: Missing elements for", dropAreaId);
+            return;
         }
 
-        // --- CRITICAL: Prevent duplicate event listeners ---
-        // Remove existing listeners by cloning the input element
-        // This is a robust way to ensure we don't attach multiple listeners
-        const newFileInput = fileInput.cloneNode(true);
-        fileInput.parentNode.replaceChild(newFileInput, fileInput);
-        // Use the cloned input for attaching listeners
+        // Ensure previous listeners are removed to avoid duplicates
+        const cloneInput = fileInput.cloneNode(true);
+        fileInput.parentNode.replaceChild(cloneInput, fileInput);
+        const newFileInput = cloneInput; // Use the cloned input
 
-        // Helper functions for drag/drop visual feedback
-        const preventDefaults = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        };
-
-        const highlight = () => {
-            dropArea.style.borderColor = '#3b82f6';
-            dropArea.style.backgroundColor = '#eff6ff';
-        };
-
-        const unhighlight = () => {
-            dropArea.style.borderColor = '#cbd5e1';
-            dropArea.style.backgroundColor = '';
-        };
-
-        // Add drag/drop event listeners to the drop area
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
         ['dragenter', 'dragover'].forEach(eventName => {
             dropArea.addEventListener(eventName, highlight, false);
@@ -128,167 +125,62 @@ document.addEventListener('DOMContentLoaded', function () {
             dropArea.addEventListener(eventName, unhighlight, false);
         });
 
-        // Add drop and change event listeners to the *cloned* input
-        dropArea.addEventListener('drop', handleDrop, false);
-        newFileInput.addEventListener('change', handleFiles, false); // Use cloned input
+        function highlight() {
+            dropArea.style.borderColor = '#3b82f6';
+            dropArea.style.backgroundColor = '#eff6ff';
+        }
 
-        // Event handler functions (defined inside to capture closure variables)
+        function unhighlight() {
+            dropArea.style.borderColor = '#cbd5e1';
+            dropArea.style.backgroundColor = '';
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        newFileInput.addEventListener('change', handleFiles); // Use cloned input
+
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
-            // Pass the specific status and hiddenInput elements found at setup time
             handleFilesGeneric(files, status, hiddenInput);
         }
 
         function handleFiles() {
-            const files = this.files; // 'this' refers to the cloned input element
-            // Pass the specific status and hiddenInput elements found at setup time
+            const files = this.files; // 'this' refers to the input element
             handleFilesGeneric(files, status, hiddenInput);
         }
-
-        // console.log(`Successfully setup drop area: ${dropAreaId}`); // Debug log
-        return true; // Indicate setup was successful
     }
 
-
-    function setupFileUploads() {
-        // --- Setup for STATIC file drop areas (present in initial HTML) ---
-
-        // 1. Create Course - Course Image
-        setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
-
-        // 2. Components - Image
-        setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
-
-        // 3. Marketplace - Image
-        setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
-
-        // --- Setup for INITIAL DYNAMIC content (lesson video in the first section template) ---
-        // These elements exist in the initial HTML inside the #sections-container template.
-        // They are not standalone IDs but are part of the innerHTML string.
-        // We need to find them within that context and set them up.
-        // Find the initial section item container (the first one in the sections container)
-        const sectionsContainer = document.getElementById('sections-container');
-        if (sectionsContainer && sectionsContainer.firstElementChild) {
-            const firstSectionItem = sectionsContainer.firstElementChild;
-            // Find the first lesson item within the first section
-            const lessonsContainer = firstSectionItem.querySelector('.lessons-container');
-            if (lessonsContainer && lessonsContainer.firstElementChild) {
-                const firstLessonItem = lessonsContainer.firstElementChild;
-                // Now find the file input elements within this first lesson item
-                const videoDropArea = firstLessonItem.querySelector('.lesson-video-drop-area');
-                const videoFileInput = firstLessonItem.querySelector('.lesson-video-file');
-                const videoStatus = firstLessonItem.querySelector('.lesson-video-upload-status');
-                const videoHiddenInput = firstLessonItem.querySelector('.lesson-video-url');
-
-                // Setup the drop area for this initial lesson video
-                if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-                     // Use unique identifiers or pass the elements directly if setupFileDropArea is refactored
-                     // For now, we rely on the robustness of setupFileDropArea to handle finding them by ID
-                     // But since these are part of a template, they might not have unique IDs initially.
-                     // A better approach is to pass the element references directly.
-                     // Let's refactor setupFileDropArea slightly or use a helper.
-
-                     // --- BETTER APPROACH: Pass element references ---
-                     setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
-                }
-            }
-        }
-    }
-
-    // --- Helper specifically for lesson videos (takes element refs, not IDs) ---
-    function setupFileDropAreaForLesson(dropArea, fileInput, statusElement, hiddenInputElement) {
-         if (!dropArea || !fileInput || !statusElement || !hiddenInputElement) {
-             console.warn("setupFileDropAreaForLesson: Missing element references");
-             return false;
-         }
-
-         // --- CRITICAL: Prevent duplicate event listeners (using element refs) ---
-         const newFileInput = fileInput.cloneNode(true);
-         fileInput.parentNode.replaceChild(newFileInput, fileInput);
-
-         const preventDefaults = (e) => { e.preventDefault(); e.stopPropagation(); };
-         const highlight = () => {
-             dropArea.style.borderColor = '#3b82f6';
-             dropArea.style.backgroundColor = '#eff6ff';
-         };
-         const unhighlight = () => {
-             dropArea.style.borderColor = '#cbd5e1';
-             dropArea.style.backgroundColor = '';
-         };
-
-         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-             dropArea.addEventListener(eventName, preventDefaults, false);
-         });
-         ['dragenter', 'dragover'].forEach(eventName => {
-             dropArea.addEventListener(eventName, highlight, false);
-         });
-         ['dragleave', 'drop'].forEach(eventName => {
-             dropArea.addEventListener(eventName, unhighlight, false);
-         });
-
-         dropArea.addEventListener('drop', handleDrop, false);
-         newFileInput.addEventListener('change', handleFiles, false);
-
-         function handleDrop(e) {
-             const dt = e.dataTransfer;
-             const files = dt.files;
-             handleFilesGeneric(files, statusElement, hiddenInputElement); // Use passed refs
-         }
-
-         function handleFiles() {
-             const files = this.files;
-             handleFilesGeneric(files, statusElement, hiddenInputElement); // Use passed refs
-         }
-
-         return true;
-    }
-
-
-    // --- Generic file handler for uploads (Real implementation with fetch) ---
+    // Generic file handler for uploads (Real implementation needed)
     async function handleFilesGeneric(files, statusElement, hiddenInput) {
-        if (files.length === 0 || !statusElement || !hiddenInput) {
-            console.warn("handleFilesGeneric: Missing files or elements");
-            return;
-        }
+        if (files.length === 0) return;
 
         const file = files[0];
         statusElement.textContent = `Uploading: ${file.name}...`;
         statusElement.className = 'upload-status uploading';
 
-        try {
-            // --- REAL UPLOAD LOGIC using Fetch API ---
-            const formData = new FormData();
-            // The backend expects the field name 'file'
-            formData.append('file', file);
-            // Optional: Add metadata like folder
-            // formData.append('folder', 'course_videos'); // Example
+        // --- REAL UPLOAD LOGIC ---
+        // In a real app, you would upload the file to Firebase Storage or your backend
+        // and update the corresponding hidden input field with the URL.
+        // This example assumes your backend has an /api/upload endpoint.
 
-            // --- KEY: Use the correct API endpoint ---
-            const response = await fetch(`${API_BASE_URL}/api/upload`, {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`${API_BASE_URL}/api/upload`, { // You need to implement this endpoint
                 method: 'POST',
-                // DO NOT set Content-Type header for FormData
+
                 // It will be set automatically with the correct boundary
-                // headers: { 'Content-Type': 'multipart/form-data' }, // REMOVE THIS LINE
+                // headers: { 'Content-Type': 'multipart/form-data' }, // REMOVE THIS
                 body: formData,
-                // Include Authorization header if your /api/upload endpoint requires it
-                // headers: {
-                //     'Authorization': `Bearer ${authToken}`
-                // }
-                // If you remove authenticateToken from /api/upload.js, remove this header.
-                // If you keep it, uncomment the line above.
+                headers: {
+                    'Authorization': `Bearer ${authToken}` // Include auth token
+                }
             });
 
             if (!response.ok) {
-                // Try to get error message from response body
-                let errorMessage = `Upload failed: ${response.status} ${response.statusText}`;
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.error || errorMessage;
-                } catch (e) {
-                    // If parsing JSON fails, ignore, use default message
-                }
-                throw new Error(errorMessage);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Upload failed: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -298,8 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.classList.remove('uploading');
             statusElement.classList.add('success');
             hiddenInput.value = downloadURL; // Set the URL in the hidden input
-            console.log(`Uploaded file URL for ${file.name}:`, downloadURL);
-            showNotification(`File "${file.name}" uploaded successfully!`, 'success');
+            console.log(`Uploaded file URL:`, downloadURL);
 
         } catch (error) {
             console.error("File upload error:", error);
@@ -307,7 +198,177 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.classList.remove('uploading');
             statusElement.classList.add('error');
             hiddenInput.value = ''; // Clear hidden input on error
-            showNotification(`File upload failed: ${error.message}`, 'error');
+        }
+    }
+
+    // --- Data Loading and UI Population (with real API calls) ---
+
+    async function loadVisibilityData() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/courses`, {
+                 method: 'GET',
+                 headers: {
+                     'Authorization': `Bearer ${authToken}`
+                 }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Failed to fetch courses: ${response.status}`);
+            }
+
+            const courses = await response.json();
+            allCourses = courses; // Store fetched courses
+            loadFeaturedCourses(courses); // Pass fetched courses
+            // TODO: loadPopularProjects - implement if you have a projects API
+            loadPopularProjects([]); // Placeholder
+
+        } catch (error) {
+            console.error("Error loading visibility data:", error);
+            showNotification(`Error loading data: ${error.message}`, 'error');
+            // Load with empty data or cached data on error
+            loadFeaturedCourses([]);
+            loadPopularProjects([]);
+        }
+    }
+
+    function loadFeaturedCourses(courses) {
+        const container = document.getElementById('featured-courses-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (!courses || courses.length === 0) {
+            container.innerHTML = '<p>No courses found.</p>';
+            return;
+        }
+
+        courses.forEach(course => {
+            const card = createVisibilityCard(course, 'course');
+            container.appendChild(card);
+        });
+    }
+
+    function loadPopularProjects(projects) {
+        const container = document.getElementById('popular-projects-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (!projects || projects.length === 0) {
+            container.innerHTML = '<p>No projects found.</p>';
+            return;
+        }
+
+        projects.forEach(project => {
+            const card = createVisibilityCard(project, 'project');
+            container.appendChild(card);
+        });
+    }
+
+    // TODO: Implement loadComponents and loadProducts by fetching from backend
+    function loadComponents() {
+        const container = document.getElementById('components-list');
+        if (!container) return;
+        container.innerHTML = '<p>Component loading not implemented yet.</p>';
+        // Fetch from /api/components and populate
+    }
+
+    function loadProducts() {
+        const container = document.getElementById('products-list');
+        if (!container) return;
+        container.innerHTML = '<p>Product loading not implemented yet.</p>';
+        // Fetch from /api/products and populate
+    }
+
+    function createVisibilityCard(item, type) {
+        // Use the new, smaller card class
+        const card = document.createElement('div');
+        card.className = 'item-card-small';
+
+        const imageHtml = item.image ? `<img src="${item.image}" alt="${item.title || item.name}">` : '';
+        const titleHtml = `<h3>${item.title || item.name}</h3>`;
+        // Keep description short or omit for small cards if needed
+        const descriptionHtml = item.description ? `<p>${item.description.substring(0, 60)}${item.description.length > 60 ? '...' : ''}</p>` : (item.author ? `<p>by ${item.author}</p>` : '');
+
+        // Use the item's 'featured' property for the checkbox state
+        const isChecked = item.featured ? 'checked' : '';
+        // Use the new, smaller actions class
+        const actionsHtml = `
+            <div class="item-actions-small">
+                <span>Visibility to Home Page</span> <!-- Updated label -->
+                <div class="toggle-visibility-small">
+                    <input type="checkbox" id="toggle-${type}-${item._id}" ${isChecked} data-id="${item._id}" data-type="${type}">
+                    <label for="toggle-${type}-${item._id}"></label> <!-- Label for checkbox -->
+                </div>
+            </div>
+        `;
+
+        card.innerHTML = `
+            ${imageHtml}
+            <div class="item-card-content-small">
+                ${titleHtml}
+                ${descriptionHtml}
+            </div>
+            ${actionsHtml}
+        `;
+
+        // Add event listener for toggle
+        const toggle = card.querySelector(`#toggle-${type}-${item._id}`);
+        if (toggle) {
+            toggle.addEventListener('change', function () {
+                toggleFeatured(item._id, type, this.checked);
+            });
+        }
+
+        return card;
+    }
+
+    // TODO: Implement createItemCard for Components/Products if editing is needed
+    function createItemCard(item, type) {
+        // For Components and Products, use the standard larger card
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        // ... (implementation similar to previous versions)
+        card.innerHTML = `<p>${type} display not fully implemented.</p><p>ID: ${item._id}</p>`;
+        return card;
+    }
+
+    async function toggleFeatured(id, type, isFeatured) {
+        console.log(`Toggling featured status for ${type} ID ${id} to ${isFeatured}`);
+        // In a real app, send this update to your backend API
+        if (type !== 'course') {
+             showNotification(`Visibility toggle for ${type} not implemented yet.`, 'warning');
+             return; // Only courses implemented for now
+        }
+
+        try {
+             const response = await fetch(`${API_BASE_URL}/api/courses/${id}`, {
+                 method: 'PATCH',
+                 headers: {
+                     'Content-Type': 'application/json',
+                     'Authorization': `Bearer ${authToken}`
+                 },
+                 body: JSON.stringify({ featured: isFeatured })
+             });
+
+             if (!response.ok) {
+                 const errorData = await response.json().catch(() => ({}));
+                 throw new Error(errorData.error || `Failed to update ${type}: ${response.status}`);
+             }
+
+             const updatedCourse = await response.json();
+             console.log(`${type} visibility updated:`, updatedCourse);
+             showNotification(`${type} visibility updated successfully!`, 'success');
+
+             // Update local state
+             const courseIndex = allCourses.findIndex(c => c._id === id);
+             if (courseIndex !== -1) {
+                 allCourses[courseIndex].featured = isFeatured;
+             }
+
+        } catch (error) {
+             console.error(`Error updating ${type} visibility:`, error);
+             showNotification(`Error updating ${type} visibility: ${error.message}`, 'error');
+             // Revert checkbox state on error? Optional.
         }
     }
 
@@ -315,10 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Course Builder Functions ---
     function addSection() {
         const sectionsContainer = document.getElementById('sections-container');
-        if (!sectionsContainer) {
-            console.error("addSection: #sections-container not found");
-            return;
-        }
+        if (!sectionsContainer) return;
 
         const sectionCount = sectionsContainer.children.length + 1;
 
@@ -374,10 +432,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // --- FIX: Allow removing the last lesson in a new section ---
         if (removeLessonBtn) {
             removeLessonBtn.addEventListener('click', function () {
-                // if (newLessonContainer.children.length > 1) { // Old restrictive logic
+                // Allow removing the last lesson in a new section
+                // if (newLessonContainer.children.length > 1) {
                     newLessonContainer.removeChild(this.closest('.lesson-item'));
                     renumberLessonsInSection(newLessonContainer);
                 // } else {
@@ -386,24 +444,19 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // --- CRITICAL FIX: Setup file drop for the NEWLY added lesson video ---
-        // Get the elements within the newly created sectionItem for the first lesson
+        // Setup file drop for the newly added lesson video (for the first lesson in this new section)
         const videoDropArea = sectionItem.querySelector('.lesson-video-drop-area');
         const videoFileInput = sectionItem.querySelector('.lesson-video-file');
         const videoStatus = sectionItem.querySelector('.lesson-video-upload-status');
         const videoHiddenInput = sectionItem.querySelector('.lesson-video-url');
 
-        // Use the robust setup function that takes element references
         if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-            setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+            // Use the ID attributes to setup the drop area correctly
+            setupFileDropArea(videoDropArea.id, videoFileInput.id, videoStatus.id, videoHiddenInput.id);
         }
     }
 
     function addLessonToSection(lessonsContainer) {
-        if (!lessonsContainer) {
-             console.error("addLessonToSection: lessonsContainer not provided");
-             return;
-        }
         const lessonCount = lessonsContainer.children.length + 1;
         const lessonItem = document.createElement('div');
         lessonItem.className = 'lesson-item';
@@ -437,23 +490,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const removeBtn = lessonItem.querySelector('.remove-lesson-btn');
         if (removeBtn) {
-            // --- FIX: Allow removing any lesson ---
             removeBtn.addEventListener('click', function () {
+                 // Allow removing any lesson
                 lessonsContainer.removeChild(lessonItem);
                 renumberLessonsInSection(lessonsContainer);
             });
         }
 
-        // --- CRITICAL FIX: Setup file drop for the NEWLY added lesson video ---
-        // Get the elements within the newly created lessonItem
+        // Setup file drop for the newly added lesson video
         const videoDropArea = lessonItem.querySelector('.lesson-video-drop-area');
         const videoFileInput = lessonItem.querySelector('.lesson-video-file');
         const videoStatus = lessonItem.querySelector('.lesson-video-upload-status');
         const videoHiddenInput = lessonItem.querySelector('.lesson-video-url');
 
-        // Use the robust setup function that takes element references
         if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-             setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+            setupFileDropArea(videoDropArea.id, videoFileInput.id, videoStatus.id, videoHiddenInput.id);
         }
     }
 
@@ -466,7 +517,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function publishCourse() {
-        // ... (rest of publishCourse logic remains largely the same, ensure it uses hidden input values) ...
         const title = document.getElementById('new-course-title')?.value.trim();
         const courseId = document.getElementById('new-course-id')?.value.trim(); // slug
         const level = document.getElementById('new-course-level')?.value;
@@ -481,7 +531,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Validate courseId slug format (basic check)
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(courseId)) {
-             showNotification('Course ID (slug) must be lowercase, use hyphens, and contain only letters and numbers (e.g., genz101)', 'error');
+             showNotification('Course ID (slug) must be lowercase, use hyphens, and contain only letters and numbers (e.g., intro-to-robotics)', 'error');
              return;
         }
 
@@ -552,10 +602,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // --- PUBLISH TO BACKEND ---
         try {
-             // Ensure authToken is available
-             if (!authToken) {
-                 throw new Error('Authentication token missing. Please log in again.');
-             }
              const response = await fetch(`${API_BASE_URL}/api/courses`, {
                  method: 'POST',
                  headers: {
@@ -693,14 +739,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
 
-                // --- CRITICAL FIX: Setup file drop for the lesson video in the reset section ---
+                // Setup file drop for the lesson video in the reset section
                 const videoDropArea = firstSection.querySelector('.lesson-video-drop-area');
                 const videoFileInput = firstSection.querySelector('.lesson-video-file');
                 const videoStatus = firstSection.querySelector('.lesson-video-upload-status');
                 const videoHiddenInput = firstSection.querySelector('.lesson-video-url');
 
                 if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-                    setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
+                    setupFileDropArea(videoDropArea.id, videoFileInput.id, videoStatus.id, videoHiddenInput.id);
                 }
             }
         }
@@ -709,7 +755,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Components & Products (with real API calls) ---
     async function addComponent() {
-        // ... (similar fixes for component/product forms) ...
         const name = document.getElementById('component-name')?.value.trim();
         const category = document.getElementById('component-category')?.value;
         const description = document.getElementById('component-description')?.value.trim();
@@ -730,10 +775,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-             // Ensure authToken is available
-             if (!authToken) {
-                 throw new Error('Authentication token missing. Please log in again.');
-             }
              const response = await fetch(`${API_BASE_URL}/api/components`, {
                  method: 'POST',
                  headers: {
@@ -782,7 +823,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function addProduct() {
-         // ... (similar fixes for component/product forms) ...
         const name = document.getElementById('product-name')?.value.trim();
         const price = parseFloat(document.getElementById('product-price')?.value);
         const description = document.getElementById('product-description')?.value.trim();
@@ -803,10 +843,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-             // Ensure authToken is available
-             if (!authToken) {
-                 throw new Error('Authentication token missing. Please log in again.');
-             }
              const response = await fetch(`${API_BASE_URL}/api/products`, {
                  method: 'POST',
                  headers: {
@@ -859,45 +895,6 @@ document.addEventListener('DOMContentLoaded', function () {
             hiddenEl.value = '';
         }
     }
-
-    // --- Data Loading (Placeholder, implement with real API calls) ---
-    async function loadVisibilityData() {
-        // ... (implement fetching courses/projects and populating visibility cards) ...
-        try {
-            // Example API call to fetch courses
-            /*
-            const response = await fetch(`${API_BASE_URL}/api/courses`, {
-                 method: 'GET',
-                 headers: {
-                     'Authorization': `Bearer ${authToken}`
-                 }
-            });
-            if (!response.ok) throw new Error('Failed to fetch courses');
-            const courses = await response.json();
-            allCourses = courses;
-            loadFeaturedCourses(courses);
-            */
-            // For now, simulate
-            console.log("Loading visibility data (simulated)");
-            loadFeaturedCourses([
-                { _id: "1", title: "Sample Course 1", featured: true, image: "https://placehold.co/250x150/blue/white?text=Course+1" },
-                { _id: "2", title: "Sample Course 2", featured: false, image: "https://placehold.co/250x150/green/white?text=Course+2" }
-            ]);
-            loadPopularProjects([
-                 { _id: "1", title: "Sample Project 1", featured: true, image: "https://placehold.co/250x150/orange/white?text=Project+1" },
-                 { _id: "2", title: "Sample Project 2", featured: false, image: "https://placehold.co/250x150/red/white?text=Project+2" }
-            ]);
-
-        } catch (error) {
-            console.error("Error loading visibility ", error);
-            showNotification(`Error loading  ${error.message}`, 'error');
-        }
-    }
-
-    function loadFeaturedCourses(courses) { /* ... */ }
-    function loadPopularProjects(projects) { /* ... */ }
-    function loadComponents() { /* ... */ }
-    function loadProducts() { /* ... */ }
 
     // --- General Functions ---
     function showNotification(message, type) {
