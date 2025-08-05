@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <label>Lesson Video</label>
                         <div class="file-input-container lesson-video-drop-area">
                             <i class="fas fa-file-video"></i>
-                            <p>Drag & drop a video here or click to browse</p>
+                            <p>Drag & drop a video (upto 50mb) here or click to browse</p>
                             <input type="file" class="lesson-video-file file-input" accept="video/*">
                         </div>
                         <div class="upload-status lesson-video-upload-status">No file selected</div>
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <label>Lesson Video</label>
                 <div class="file-input-container lesson-video-drop-area">
                     <i class="fas fa-file-video"></i>
-                    <p>Drag & drop a video here or click to browse</p>
+                    <p>Drag & drop a video (upto 50mb) here or click to browse</p>
                     <input type="file" class="lesson-video-file file-input" accept="video/*">
                 </div>
                 <div class="upload-status lesson-video-upload-status">No file selected</div>
@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <label>Lesson Video</label>
                                 <div class="file-input-container lesson-video-drop-area">
                                     <i class="fas fa-file-video"></i>
-                                    <p>Drag & drop a video here or click to browse</p>
+                                    <p>Drag & drop a video (upto 50mb) here or click to browse</p>
                                     <input type="file" class="lesson-video-file file-input" accept="video/*">
                                 </div>
                                 <div class="upload-status lesson-video-upload-status">No file selected</div>
