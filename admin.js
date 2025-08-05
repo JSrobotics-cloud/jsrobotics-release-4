@@ -1,5 +1,5 @@
 // admin.js
-
+const API_BASE_URL = 'https://jsrobotics-release-4.vercel.app';
 document.addEventListener('DOMContentLoaded', function () {
     // --- Configuration ---
     // TODO: Update to your actual backend URL
