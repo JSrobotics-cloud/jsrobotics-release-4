@@ -141,25 +141,24 @@ function setupFileUploads() {
     // We need to find them within that context and set them up correctly.
     // Find the initial section item container (the first one in the sections container)
     const sectionsContainer = document.getElementById('sections-container');
-    if (sectionsContainer && sectionsContainer.firstElementChild) {
-        const firstSectionItem = sectionsContainer.firstElementChild;
-        // Find the first lesson item within the first section
-        const lessonsContainer = firstSectionItem.querySelector('.lessons-container');
-        if (lessonsContainer && lessonsContainer.firstElementChild) {
-            const firstLessonItem = lessonsContainer.firstElementChild;
-            // Now find the file input elements within this first lesson item
-            const videoDropArea = firstLessonItem.querySelector('.lesson-video-drop-area');
-            const videoFileInput = firstLessonItem.querySelector('.lesson-video-file');
-            const videoStatus = firstLessonItem.querySelector('.lesson-video-upload-status');
-            const videoHiddenInput = firstLessonItem.querySelector('.lesson-video-url');
+if (sectionsContainer && sectionsContainer.firstElementChild) {
+    const firstSectionItem = sectionsContainer.firstElementChild;
+    const lessonsContainer = firstSectionItem.querySelector('.lessons-container');
+    if (lessonsContainer && lessonsContainer.firstElementChild) {
+        const firstLessonItem = lessonsContainer.firstElementChild;
+        // Find the file input elements within this first lesson item
+        const videoDropArea = firstLessonItem.querySelector('.lesson-video-drop-area');
+        const videoFileInput = firstLessonItem.querySelector('.lesson-video-file');
+        const videoStatus = firstLessonItem.querySelector('.lesson-video-upload-status');
+        const videoHiddenInput = firstLessonItem.querySelector('.lesson-video-url');
 
-            // Setup the drop area for this initial lesson video
-            // Use the robust setup function that takes element references
-            if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
-                setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
-            }
+        // Setup the drop area for this initial lesson video using element references
+        if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
+            // CALL THE NEWLY DEFINED FUNCTION WITH ELEMENT REFERENCES
+            setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
         }
     }
+}
 }
 // --- END OF REPLACEMENT ---
 
