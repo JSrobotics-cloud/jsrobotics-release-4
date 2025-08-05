@@ -122,29 +122,46 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function setupFileUploads() {
-        // Static areas
-        setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
-        setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
-        setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
+    // --- REPLACE THE ENTIRE setupFileUploads FUNCTION ---
+function setupFileUploads() {
+    // --- Setup for STATIC file drop areas (present in initial HTML) ---
 
-        // Initial dynamic area (first lesson video in template)
-        const sectionsContainer = document.getElementById('sections-container');
-        if (sectionsContainer && sectionsContainer.firstElementChild) {
-            const firstLessonItem = sectionsContainer.firstElementChild
-                .querySelector('.lessons-container')
-                ?.firstElementChild;
+    // 1. Create Course - Course Image
+    setupFileDropArea('course-image-drop-area', 'new-course-image-file', 'course-image-upload-status', 'new-course-image-url');
 
-            if (firstLessonItem) {
-                setupFileDropArea(
-                    firstLessonItem.querySelector('.lesson-video-drop-area'),
-                    firstLessonItem.querySelector('.lesson-video-file'),
-                    firstLessonItem.querySelector('.lesson-video-upload-status'),
-                    firstLessonItem.querySelector('.lesson-video-url')
-                );
+    // 2. Components - Image
+    setupFileDropArea('component-image-drop-area', 'component-image-file', 'component-image-upload-status', 'component-image-url');
+
+    // 3. Marketplace - Image
+    setupFileDropArea('product-image-drop-area', 'product-image-file', 'product-image-upload-status', 'product-image-url');
+
+    // --- Setup for INITIAL DYNAMIC content (lesson video in the first section template) ---
+    // These elements exist in the initial HTML inside the #sections-container template.
+    // They are not standalone IDs but are part of the innerHTML string.
+    // We need to find them within that context and set them up correctly.
+    // Find the initial section item container (the first one in the sections container)
+    const sectionsContainer = document.getElementById('sections-container');
+    if (sectionsContainer && sectionsContainer.firstElementChild) {
+        const firstSectionItem = sectionsContainer.firstElementChild;
+        // Find the first lesson item within the first section
+        const lessonsContainer = firstSectionItem.querySelector('.lessons-container');
+        if (lessonsContainer && lessonsContainer.firstElementChild) {
+            const firstLessonItem = lessonsContainer.firstElementChild;
+            // Now find the file input elements within this first lesson item
+            const videoDropArea = firstLessonItem.querySelector('.lesson-video-drop-area');
+            const videoFileInput = firstLessonItem.querySelector('.lesson-video-file');
+            const videoStatus = firstLessonItem.querySelector('.lesson-video-upload-status');
+            const videoHiddenInput = firstLessonItem.querySelector('.lesson-video-url');
+
+            // Setup the drop area for this initial lesson video
+            // Use the robust setup function that takes element references
+            if (videoDropArea && videoFileInput && videoStatus && videoHiddenInput) {
+                setupFileDropAreaForLesson(videoDropArea, videoFileInput, videoStatus, videoHiddenInput);
             }
         }
     }
+}
+// --- END OF REPLACEMENT ---
 
     async function handleFilesGeneric(files, statusElement, hiddenInput) {
         if (files.length === 0) return;
