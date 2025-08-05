@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   badges: [{ type: String }]
 });
 
-let User;
+let User; 
 
 async function connectToDatabase() {
   if (mongoose.connection.readyState < 1) {
