@@ -1,10 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
 const fs = require('fs');
-
-dotenv.config();
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,42 +10,32 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Default home route
 app.get('/', (req, res) => {
-  res.send('JSrobotics unified API is live.');
+  res.send('JSrobotics API running');
 });
 
-/**
- * Recursively walk through the /api folder and register routes
- * Example: /api/components/create.js → /api/components/create
- */
-function registerRoutesFromFolder(baseRoutePath, folderPath) {
-  fs.readdirSync(folderPath).forEach((fileOrFolder) => {
-    const fullPath = path.join(folderPath, fileOrFolder);
-    const routePath = path.join(baseRoutePath, fileOrFolder.replace(/\.js$/, ''));
-
+// Load all routes from the /api folder recursively
+function loadRoutes(basePath, dir) {
+  fs.readdirSync(dir).forEach((entry) => {
+    const fullPath = path.join(dir, entry);
     const stat = fs.statSync(fullPath);
+
     if (stat.isDirectory()) {
-      registerRoutesFromFolder(routePath, fullPath); // Recurse into subfolders
-    } else if (stat.isFile() && fileOrFolder.endsWith('.js')) {
-      try {
-        const route = require(fullPath);
-
-        // If it's a dynamic route like [id].js → convert to :id
-        const finalRoute = routePath.replace(/\[([^\]]+)\]/g, ':$1').replace(/\\/g, '/');
-
-        app.use(finalRoute, route);
-        console.log(`✅ Loaded route: ${finalRoute}`);
-      } catch (err) {
-        console.error(`❌ Failed to load route ${routePath}:`, err);
-      }
+      loadRoutes(path.join(basePath, entry), fullPath);
+    } else if (entry.endsWith('.js')) {
+      const route = require(fullPath);
+      const routePath = path.join(basePath, entry.replace(/\.js$/, '')).replace(/\\/g, '/');
+      const finalRoute = routePath.replace(/\[([^\]]+)\]/g, ':$1');
+      app.use(finalRoute, route);
     }
   });
 }
 
-// Start registering all routes from /api
-registerRoutesFromFolder('/api', path.join(__dirname, 'api'));
+// Register routes
+loadRoutes('/api', path.join(__dirname, 'api'));
 
-// Start server
+// Start the server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
