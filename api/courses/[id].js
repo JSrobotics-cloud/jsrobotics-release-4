@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     if (!id) {
         return res.status(400).json({ error: 'Course ID is required' });
     }
-
+ 
     try {
         await connectToDatabase();
 

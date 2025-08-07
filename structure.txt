@@ -12,7 +12,7 @@ your-project-root/
 │   ├── auth/
 │   │   ├── login.js
 │   │   └── register.js
-│   ├── courses/         !!!!!// this folder will be on render.com to handle larger files thatn 4.5mg like vercel limit 
+│   ├── courses/         !!!!!// this folder will be on render.com to handle larger files thatn 4.5mb like vercel limit 
 │   │   ├── index.js     // GET /api/courses
 │   │   ├── [id].js      // GET /api/courses/:id
 │   │   └── create.js    // POST /api/courses (handles course creation with video)

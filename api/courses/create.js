@@ -14,7 +14,7 @@ export const config = {
     bodyParser: false, // Disable default body parser for file uploads
   },
 };
-
+ 
 // Wrap the handler with authentication middleware
 export default authenticateToken(async function createCourse(req, res) {
     if (req.method !== 'POST') {
