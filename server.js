@@ -52,3 +52,4 @@ registerRoutesFromFolder('/api', path.join(__dirname, 'api'));
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+ 
