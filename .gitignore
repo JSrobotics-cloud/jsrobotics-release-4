@@ -38,6 +38,8 @@ build/
 *.tgz
 
 # Firebase admin credentials
-jsrobotics-cloud-storage-firebase-adminsdk-fbsvc-3073df0882.json
 
-fvgarfbhafrbvarbkjfrfvrb
+
+jsrobotics-cloud-storage-firebase-adminsdk-fbsvc-9c95282c0f.json
+
+firebase-adminsdk*.json
