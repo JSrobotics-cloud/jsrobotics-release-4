@@ -1,78 +1,53 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-const fs = require('fs');
-
-dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// ========== COMPONENTS ==========
+import componentsIndex from './api/components/index.js';
+import componentsCreate from './api/components/create.js';
+
+app.get('/api/components', componentsIndex);
+app.post('/api/components', componentsCreate);
+
+// ========== COURSES ==========
+import coursesIndex from './api/courses/index.js';
+import courseById from './api/courses/[id].js';
+import coursesCreate from './api/courses/create.js';
+
+app.get('/api/courses', coursesIndex);
+app.get('/api/courses/:id', courseById);
+app.post('/api/courses', coursesCreate);
+
+// ========== PROJECTS ==========
+import projectsIndex from './api/projects/index.js';
+import projectsCreate from './api/projects/create.js';
+
+app.get('/api/projects', projectsIndex);
+app.post('/api/projects', projectsCreate);
+
+// ========== UPLOAD ==========
+import uploadHandler from './api/upload.js';
+app.post('/api/upload', uploadHandler);
+
+// ========== HEALTH CHECK ==========
+app.get('/check', (req, res) => res.json({ status: 'ok' }));
 
 app.get('/', (req, res) => {
   res.send('JSrobotics unified API is live.');
 });
 
-/**
- * Recursively walk through the /api folder and register routes
- * Example: /api/components/create.js → /api/components/create
- */
-function registerRoutesFromFolder(baseRoutePath, folderPath) {
-  fs.readdirSync(folderPath).forEach((fileOrFolder) => {
-    const fullPath = path.join(folderPath, fileOrFolder);
-    const routePath = path.join(baseRoutePath, fileOrFolder.replace(/\.js$/, ''));
+// Optional: serve frontend if present
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, 'dist')));
+app.get('*', (req, res) =>
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+);
 
-    const stat = fs.statSync(fullPath);
-    if (stat.isDirectory()) {
-      registerRoutesFromFolder(routePath, fullPath); // Recurse into subfolders
-    } else if (stat.isFile() && fileOrFolder.endsWith('.js')) {
-      try {
-        const route = require(fullPath);
-
-        // If it's a dynamic route like [id].js → convert to :id
-        const finalRoute = routePath.replace(/\[([^\]]+)\]/g, ':$1').replace(/\\/g, '/');
-
-        app.use(finalRoute, route);
-        console.log(`✅ Loaded route: ${finalRoute}`);
-      } catch (err) {
-        console.error(`❌ Failed to load route ${routePath}:`, err);
-      }
-    }
-  });
-}
-
-// Start registering all routes from /api
-registerRoutesFromFolder('/api', path.join(__dirname, 'api'));
-
-// Lightweight ping for Fly.io or uptime checks
-app.get('/ping', (req, res) => {
-  res.send('pong');
-});
-
-// Health check endpoint
-app.get('/check', async (req, res) => {
-  const status = {
-    uptime: process.uptime(),
-    message: 'OK',
-    timestamp: Date.now(),
-  };
-
-  try {
-    // Optional: check DB/Firebase connection here
-    // Example: await mongoose.connection.db.admin().ping();
-    res.status(200).json(status);
-  } catch (error) {
-    res.status(500).json({ message: 'Error', error: error.message });
-  }
-});
-
-
-// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
-  
