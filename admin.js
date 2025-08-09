@@ -2,7 +2,7 @@
 
 // --- Configuration ---
 // Use relative path if adminpanel.html and API are on the same Vercel project
-const API_BASE_URL = 'https://jsrobotics-release-4-1.fly.dev';
+const API_BASE_URL = 'https://jsrobotics-release-4-1.fly.dev'; 
 // For local development: const API_BASE_URL = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', function () {
