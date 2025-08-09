@@ -48,6 +48,29 @@ function registerRoutesFromFolder(baseRoutePath, folderPath) {
 // Start registering all routes from /api
 registerRoutesFromFolder('/api', path.join(__dirname, 'api'));
 
+// Lightweight ping for Fly.io or uptime checks
+app.get('/ping', (req, res) => {
+  res.send('pong');
+});
+
+// Health check endpoint
+app.get('/check', async (req, res) => {
+  const status = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: Date.now(),
+  };
+
+  try {
+    // Optional: check DB/Firebase connection here
+    // Example: await mongoose.connection.db.admin().ping();
+    res.status(200).json(status);
+  } catch (error) {
+    res.status(500).json({ message: 'Error', error: error.message });
+  }
+});
+
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
