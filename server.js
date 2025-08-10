@@ -40,12 +40,7 @@ app.get('/', (req, res) => {
   res.send('JSrobotics unified API is live.');
 });
 
-// Optional: serve frontend if present
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, 'dist')));
-app.get('*', (req, res) =>
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
-);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
