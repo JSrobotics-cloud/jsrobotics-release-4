@@ -802,7 +802,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Visibility Management (with real API calls) ---
     async function loadVisibilityData() {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/courses`, {
+            const response = await fetch(`${API_BASE_URL}/api/courses/index`, {
                  method: 'GET',
                  headers: {
                      'Authorization': `Bearer ${authToken}`
