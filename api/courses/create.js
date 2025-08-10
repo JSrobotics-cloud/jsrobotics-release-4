@@ -16,7 +16,7 @@ export const config = {
 };
 
 // Wrap the handler with authentication middleware
-export default authenticateToken(async function createCourse(req, res) {
+const createCourse = authenticateToken(async (req, res) => {
     if (req.method !== 'POST') {
         res.setHeader('Allow', ['POST']);
         return res.status(405).json({ error: `Method ${req.method} not allowed` });
@@ -135,3 +135,5 @@ export default authenticateToken(async function createCourse(req, res) {
         }
     }
 });
+
+export default createCourse;
