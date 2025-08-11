@@ -4,7 +4,7 @@ import path from 'path';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+
 
 // ========== COMPONENTS ==========
 import componentsIndex from './api/components/index.js';
@@ -20,7 +20,13 @@ import coursesCreate from './api/courses/create.js';
 
 app.get('/api/courses/index', coursesIndex);
 app.get('/api/courses/:id', courseById);
-app.post('/api/courses/create', coursesCreate);
+// Disable body parsing for this route so formidable can read the raw stream
+app.post('/api/courses/create', (req, res, next) => {
+  // remove any pre-parsed body so formidable works
+  req.body = undefined;
+  coursesCreate(req, res, next);
+});
+
 
 // ========== PROJECTS ==========
 import projectsIndex from './api/projects/index.js';
@@ -46,3 +52,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+
+app.use(express.json());
