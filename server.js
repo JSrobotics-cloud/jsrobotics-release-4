@@ -40,8 +40,8 @@ app.post('/api/projects/create', projectsCreate);
 import productsIndex from './api/products/index.js';
 import productsCreate from './api/products/create.js';
 
-app.get('/api/products', productsIndex);    
-app.post('/api/products', productsCreate);
+app.get('/api/products/index', productsIndex);    
+app.post('/api/products/create', productsCreate);
 
 // ========== UPLOAD ==========
 import uploadHandler from './api/upload.js';
