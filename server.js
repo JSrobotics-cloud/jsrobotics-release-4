@@ -35,6 +35,14 @@ import projectsCreate from './api/projects/create.js';
 app.get('/api/projects/index', projectsIndex);
 app.post('/api/projects/create', projectsCreate);
 
+// ========== PRODUCTS ==========
+
+import productsIndex from './api/products/index.js';
+import productsCreate from './api/products/create.js';
+
+app.get('/api/products', productsIndex);    
+app.post('/api/products', productsCreate);
+
 // ========== UPLOAD ==========
 import uploadHandler from './api/upload.js';
 app.post('/api/upload', uploadHandler);
