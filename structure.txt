@@ -8,11 +8,11 @@ your-project-root/
 │   ├── db.js          // MongoDB connection & models
 │   ├── firebase.js    // Firebase Admin SDK initialization
 │   └── auth.js        // Authentication middleware
-├── api/
+├── api/              !!!!!! all api will be deployed on fly.io except auth folder
 │   ├── auth/
 │   │   ├── login.js
 │   │   └── register.js
-│   ├── courses/         !!!!!// this folder will be on render.com to handle larger files thatn 4.5mb like vercel limit 
+│   ├── courses/         
 │   │   ├── index.js     // GET /api/courses
 │   │   ├── [id].js      // GET /api/courses/:id
 │   │   └── create.js    // POST /api/courses (handles course creation with video)
@@ -22,7 +22,7 @@ your-project-root/
 │   ├── components/
 │   │   ├── index.js     // GET /api/components
 │   │   └── create.js    // POST /api/components (handles component creation with image)
-│   ├── upload.js        // POST /api/upload (handles general file uploads)  !!! // and this will be on render.com too
+│   ├── upload.js        // POST /api/upload (handles general file uploads) 
 │   └── profile/
 │       ├── [id].js      // GET /api/profile/:id
 │       └── update.js    // PUT /api/profile (requires auth)
