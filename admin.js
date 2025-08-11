@@ -50,9 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (sectionId === 'visibility') {
                     loadVisibilityData();
                 } else if (sectionId === 'components') {
-                    // loadComponents(); // Implement if needed
+                    loadComponents(); // Implement if needed
                 } else if (sectionId === 'marketplace') {
-                    // loadProducts(); // Implement if needed
+                    loadProducts(); // Implement if needed
                 }
             });
         });
@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         try {
-             const response = await fetch(`${API_BASE_URL}/api/products`, {
+             const response = await fetch(`${API_BASE_URL}/api/products/create`, {
                  method: 'POST',
                  headers: {
                      'Content-Type': 'application/json',
@@ -862,20 +862,126 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // TODO: Implement loadComponents and loadProducts by fetching from backend
-    function loadComponents() {
-        const container = document.getElementById('components-list');
-        if (!container) return;
-        container.innerHTML = '<p>Component loading not implemented yet.</p>';
-        // Fetch from /api/components and populate
+    async function loadComponents() {
+    const container = document.getElementById('components-list');
+    if (!container) {
+        console.warn("loadComponents: Container #components-list not found");
+        return;
     }
 
-    function loadProducts() {
-        const container = document.getElementById('products-list');
-        if (!container) return;
-        container.innerHTML = '<p>Product loading not implemented yet.</p>';
-        // Fetch from /api/products and populate
+    // Show loading state
+    container.innerHTML = '<p>Loading components...</p>';
+
+    try {
+        // --- FETCH FROM BACKEND API ---
+        const response = await fetch(`${API_BASE_URL}/api/components/index`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}` // Include auth token if endpoint requires it
+            }
+        });
+
+        if (!response.ok) {
+            // Try to get error message from JSON response
+            let errorMsg = `Failed to load components: ${response.status} ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                errorMsg = errorData.error || errorMsg;
+            } catch (e) {
+                // Ignore JSON parse error for error message
+            }
+            throw new Error(errorMsg);
+        }
+
+        const components = await response.json();
+        displayComponents(components);
+
+    } catch (error) {
+        console.error("Error loading components:", error);
+        container.innerHTML = `<p class="error-message">Error loading components: ${error.message}</p>`;
+        showNotification(`Error loading components: ${error.message}`, 'error');
+    }
+}
+
+function displayComponents(components) {
+    const container = document.getElementById('components-list');
+    if (!container) return;
+
+    container.innerHTML = ''; // Clear loading/error message
+
+    if (!components || components.length === 0) {
+        container.innerHTML = '<p>No components found.</p>';
+        return;
     }
 
+    const fragment = document.createDocumentFragment();
+    components.forEach(component => {
+        const card = createItemCard(component, 'component'); // Reuse existing card function
+        fragment.appendChild(card);
+    });
+    container.appendChild(fragment);
+}
+
+
+async function loadProducts() {
+    const container = document.getElementById('products-list');
+    if (!container) {
+        console.warn("loadProducts: Container #products-list not found");
+        return;
+    }
+
+    // Show loading state
+    container.innerHTML = '<p>Loading products...</p>';
+
+    try {
+        // --- FETCH FROM BACKEND API ---
+        const response = await fetch(`${API_BASE_URL}/api/products/index`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authToken}` // Include auth token if endpoint requires it
+            }
+        });
+
+        if (!response.ok) {
+            // Try to get error message from JSON response
+            let errorMsg = `Failed to load products: ${response.status} ${response.statusText}`;
+            try {
+                const errorData = await response.json();
+                errorMsg = errorData.error || errorMsg;
+            } catch (e) {
+                // Ignore JSON parse error for error message
+            }
+            throw new Error(errorMsg);
+        }
+
+        const products = await response.json();
+        displayProducts(products);
+
+    } catch (error) {
+        console.error("Error loading products:", error);
+        container.innerHTML = `<p class="error-message">Error loading products: ${error.message}</p>`;
+        showNotification(`Error loading products: ${error.message}`, 'error');
+    }
+}
+
+function displayProducts(products) {
+    const container = document.getElementById('products-list');
+    if (!container) return;
+
+    container.innerHTML = ''; // Clear loading/error message
+
+    if (!products || products.length === 0) {
+        container.innerHTML = '<p>No products found.</p>';
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    products.forEach(product => {
+        const card = createItemCard(product, 'product'); // Reuse existing card function
+        fragment.appendChild(card);
+    });
+    container.appendChild(fragment);
+}
     function createVisibilityCard(item, type) {
         // Use the new, smaller card class
         const card = document.createElement('div');
