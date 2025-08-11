@@ -3,7 +3,39 @@ import cors from 'cors';
 import path from 'path';
 
 const app = express();
-app.use(cors());
+
+
+
+const allowedOrigins = [
+  'https://jsrobotics-release-4.vercel.app',
+  'https://jsrobotics.uz',
+  // add localhost for testing if needed:
+  'http://localhost:3000'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('CORS not allowed for this origin'), false);
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Handle preflight explicitly (important for OPTIONS requests)
+app.options('*', cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 
 
 // ========== COMPONENTS ==========
