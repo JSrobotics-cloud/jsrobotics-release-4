@@ -1,12 +1,5 @@
 // api/products/index.js
-import { connectToDatabase, Component } from '../../lib/db.js'; // Assuming Product model is exported from db.js
 
-// If you have a separate Product model defined in lib/db.js, import it like Course
-// import { connectToDatabase, Product } from '../../lib/db.js';
-
-// For now, assuming your Product model is named `Component` based on previous snippets.
-// !!! IMPORTANT: Please ensure you have a `Product` model defined in `lib/db.js` and import it correctly.
-// If it's actually named `Product`, change the import above and `Component` usages below to `Product`.
 import { connectToDatabase, Product } from '../../lib/db.js'; // Corrected assuming model is named Product
 
 export default async function handler(req, res) {
