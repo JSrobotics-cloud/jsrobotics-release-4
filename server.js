@@ -1,33 +1,44 @@
+// server.js — CORS-first, routes after middleware
 import express from 'express';
+import cors from 'cors';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-// ===== Initialize App =====
 const app = express();
-app.use(express.json());
 
-// ===== Allowed Origins =====
+// Allowed origins - keep the ones you trust
 const allowedOrigins = [
   'https://jsrobotics-release-4.vercel.app',
   'https://jsrobotics.uz',
-  'http://localhost:3000' // for local testing
+  'http://localhost:3000'
 ];
 
-// ===== CORS Middleware =====
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+// CORS config that reflects the incoming Origin (recommended for admin UI)
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (curl, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('CORS not allowed by server'));
+  },
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','Accept'],
+  credentials: true,
+  preflightContinue: false, // important - let cors handle OPTIONS
+  optionsSuccessStatus: 204
+};
 
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204); // Preflight OK
-  }
-  next();
-});
+// APPLY CORS BEFORE ANY ROUTES
+app.use(cors(corsOptions));
+
+// Also explicitly handle preflight for all routes (safe)
+app.options('*', cors(corsOptions));
+
+// Now body parsers (after CORS)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+
 
 // ===== ROUTES =====
 
