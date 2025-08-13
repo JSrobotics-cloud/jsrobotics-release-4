@@ -1,4 +1,3 @@
-// api/components/index.js
 import { connectToDatabase, Component } from '../../lib/db.js';
 
 export default async function handler(req, res) {
@@ -10,15 +9,17 @@ export default async function handler(req, res) {
     try {
         await connectToDatabase();
 
-        // Optional: Get query parameters for filtering (e.g., ?category=sensor)
-        const { category } = req.query;
+        const { level, showOnHomePage, showOnItsPage } = req.query;
         let filter = {};
 
-        if (category) filter.category = category;
+        if (level) filter.level = level;
+
+        if (showOnHomePage === 'true') filter.showOnHomePage = true;
+        if (showOnItsPage === 'true') filter.showOnItsPage = true;
 
         const components = await Component.find(filter).select('-__v');
-
         res.status(200).json(components);
+
     } catch (error) {
         console.error("Error fetching components:", error);
         res.status(500).json({ error: 'Internal Server Error while fetching components' });
