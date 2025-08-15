@@ -1,85 +1,69 @@
-// server.js — CORS-first, routes after middleware
+// server.js — Safe boot version for Fly.io
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
 
 const app = express();
 
-// Allowed origins - keep the ones you trust
+// ====== CONFIG ======
 const allowedOrigins = [
   'https://jsrobotics-release-4.vercel.app',
   'https://jsrobotics.uz',
   'http://localhost:3000'
 ];
 
-// CORS config that reflects the incoming Origin (recommended for admin UI)
 const corsOptions = {
-  origin: function (origin, callback) {
-    // allow requests with no origin (curl, mobile apps)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error('CORS not allowed by server'));
   },
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization','Accept'],
-  credentials: true,
-  preflightContinue: false, // important - let cors handle OPTIONS
-  optionsSuccessStatus: 204
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: true
 };
 
-// APPLY CORS BEFORE ANY ROUTES
 app.use(cors(corsOptions));
-
-// Also explicitly handle preflight for all routes (safe)
 app.options('*', cors(corsOptions));
 
-// Now body parsers (after CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ====== HELPER to load routes safely ======
+function safeRoute(method, path, importPath) {
+  app[method](path, async (req, res, next) => {
+    try {
+      const mod = await import(importPath);
+      return mod.default(req, res, next);
+    } catch (err) {
+      console.error(`❌ Error loading route ${path}:`, err);
+      res.status(500).json({ error: `Server error in ${path}` });
+    }
+  });
+}
 
-
-
-// ===== ROUTES =====
+// ====== ROUTES ======
 
 // Components
-import componentsIndex from './api/components/index.js';
-import componentsCreate from './api/components/create.js';
-app.get('/api/components/index', componentsIndex);
-app.post('/api/components/create', componentsCreate);
+safeRoute('get', '/api/components/index', './api/components/index.js');
+safeRoute('post', '/api/components/create', './api/components/create.js');
 
 // Courses
-import coursesIndex from './api/courses/index.js';
-import courseById from './api/courses/[id].js';
-import coursesCreate from './api/courses/create.js';
-app.get('/api/courses/index', coursesIndex);
-app.get('/api/courses/:id', courseById);
-app.post('/api/courses/create', (req, res, next) => {
-  req.body = undefined; // Let formidable handle body
-  coursesCreate(req, res, next);
-});
+safeRoute('get', '/api/courses/index', './api/courses/index.js');
+safeRoute('get', '/api/courses/:id', './api/courses/[id].js');
+safeRoute('post', '/api/courses/create', './api/courses/create.js');
 
 // Projects
-import projectsIndex from './api/projects/index.js';
-import projectsCreate from './api/projects/create.js';
-app.get('/api/projects/index', projectsIndex);
-app.post('/api/projects/create', projectsCreate);
+safeRoute('get', '/api/projects/index', './api/projects/index.js');
+safeRoute('post', '/api/projects/create', './api/projects/create.js');
 
 // Products
-import productsIndex from './api/products/index.js';
-import productsCreate from './api/products/create.js';
-app.get('/api/products/index', productsIndex);
-app.post('/api/products/create', productsCreate);
+safeRoute('get', '/api/products/index', './api/products/index.js');
+safeRoute('post', '/api/products/create', './api/products/create.js');
 
 // Visibility
-
-import updateVisibilityHandler from './api/updateVisibility.js';
-app.patch('/api/updateVisibility', updateVisibilityHandler);
-
+safeRoute('patch', '/api/updateVisibility', './api/updateVisibility.js');
 
 // Upload
-import uploadHandler from './api/upload.js';
-app.post('/api/upload', uploadHandler);
+safeRoute('post', '/api/upload', './api/upload.js');
 
 // Health check
 app.get('/check', (req, res) => res.json({ status: 'ok' }));
@@ -89,8 +73,14 @@ app.get('/', (req, res) => {
   res.send('JSrobotics unified API is live.');
 });
 
-// ===== Start Server =====
+// ====== GLOBAL ERROR HANDLER ======
+app.use((err, req, res, next) => {
+  console.error('🔥 Unhandled error:', err);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
+// ====== START SERVER ======
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
