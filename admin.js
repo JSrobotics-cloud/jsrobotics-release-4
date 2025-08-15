@@ -916,7 +916,7 @@ function displayComponents(components) {
 
     const fragment = document.createDocumentFragment();
     components.forEach(component => {
-        const card = createItemCard(component, 'component'); // Reuse existing card function
+        const card = createVisibilityCard(component, 'component'); // Reuse existing card function
         fragment.appendChild(card);
     });
     container.appendChild(fragment);
@@ -977,7 +977,7 @@ function displayProducts(products) {
 
     const fragment = document.createDocumentFragment();
     products.forEach(product => {
-        const card = createItemCard(product, 'product'); // Reuse existing card function
+        const card = createVisibilityCard(product, 'product'); // Reuse existing card function
         fragment.appendChild(card);
     });
     container.appendChild(fragment);
