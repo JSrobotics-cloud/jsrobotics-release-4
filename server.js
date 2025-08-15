@@ -71,6 +71,12 @@ import productsCreate from './api/products/create.js';
 app.get('/api/products/index', productsIndex);
 app.post('/api/products/create', productsCreate);
 
+// Visibility
+
+import updateVisibilityHandler from './api/updateVisibility.js';
+app.patch('/api/updateVisibility', updateVisibilityHandler);
+
+
 // Upload
 import uploadHandler from './api/upload.js';
 app.post('/api/upload', uploadHandler);
