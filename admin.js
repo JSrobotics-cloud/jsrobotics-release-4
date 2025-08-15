@@ -982,53 +982,101 @@ function displayProducts(products) {
     });
     container.appendChild(fragment);
 }
-    function createVisibilityCard(item, type) {
-        // Use the new, smaller card class
-        const card = document.createElement('div');
-        card.className = 'item-card-small';
 
-        const imageHtml = item.image ? `<img src="${item.image}" alt="${item.title || item.name}">` : '';
-        const titleHtml = `<h3>${item.title || item.name}</h3>`;
-        // Keep description short or omit for small cards if needed
-        const descriptionHtml = item.description ? `<p>${item.description.substring(0, 60)}${item.description.length > 60 ? '...' : ''}</p>` : (item.author ? `<p>by ${item.author}</p>` : '');
 
-        // Use the item's 'featured' property for the checkbox state
-        const isChecked = item.featured ? 'checked' : '';
-        // Use the new, smaller actions class
-        const actionsHtml = `
-            <div class="item-actions-small">
-                <span>Visibility to Home Page</span> <!-- Updated label -->
-                <div class="toggle-visibility-small">
-                    <input type="checkbox" id="toggle-${type}-${item._id}" ${isChecked} data-id="${item._id}" data-type="${type}">
-                    <label for="toggle-${type}-${item._id}"></label> <!-- Label for checkbox -->
-                </div>
+
+
+// ================== UNIVERSAL VISIBILITY SYSTEM ==================
+
+// Create card for any type (courses, products, components)
+function createVisibilityCard(item, type) {
+    const card = document.createElement('div');
+    card.className = 'item-card-small';
+
+    const imageHtml = item.image
+        ? `<img src="${item.image}" alt="${item.title || item.name}">`
+        : '';
+
+    const titleHtml = `<h3>${item.title || item.name || 'Untitled'}</h3>`;
+    const descriptionHtml = item.description
+        ? `<p>${item.description.substring(0, 60)}${item.description.length > 60 ? '...' : ''}</p>`
+        : (item.author ? `<p>by ${item.author}</p>` : '');
+
+    const homeChecked = item.showOnHomePage ? 'checked' : '';
+    const pageChecked = item.showOnItsPage ? 'checked' : '';
+
+    const actionsHtml = `
+        <div class="item-actions-small">
+            <span>Show on Home Page</span>
+            <div class="toggle-visibility-small">
+                <input type="checkbox" class="toggle-home" data-id="${item._id}" data-type="${type}" ${homeChecked}>
+                <label></label>
             </div>
-        `;
-
-        card.innerHTML = `
-            ${imageHtml}
-            <div class="item-card-content-small">
-                ${titleHtml}
-                ${descriptionHtml}
+        </div>
+        <div class="item-actions-small">
+            <span>Show on Its Page</span>
+            <div class="toggle-visibility-small">
+                <input type="checkbox" class="toggle-page" data-id="${item._id}" data-type="${type}" ${pageChecked}>
+                <label></label>
             </div>
-            ${actionsHtml}
-        `;
+        </div>
+    `;
 
-        
-        
+    card.innerHTML = `
+        ${imageHtml}
+        <div class="item-card-content-small">
+            ${titleHtml}
+            ${descriptionHtml}
+        </div>
+        ${actionsHtml}
+    `;
 
-        return card;
+    return card;
+}
+
+// Update MongoDB visibility for any type & field
+async function toggleVisibility(id, type, field, value) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('Missing auth token');
+
+        const res = await fetch(`${API_BASE_URL}/api/updateVisibility`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                id,
+                type, // 'courses' | 'products' | 'components'
+                [field]: value
+            })
+        });
+
+        if (!res.ok) {
+            throw new Error(await res.text());
+        }
+        console.log(`Updated ${type} ${id} → ${field} = ${value}`);
+    } catch (err) {
+        console.error(`Error updating ${type} ${id}:`, err);
+        alert(`Error: ${err.message}`);
     }
+}
 
-    // TODO: Implement createItemCard for Components/Products if editing is needed
-    function createItemCard(item, type) {
-        // For Components and Products, use the standard larger card
-        const card = document.createElement('div');
-        card.className = 'item-card';
-        // ... (implementation similar to previous versions)
-        card.innerHTML = `<p>${type} display not fully implemented.</p><p>ID: ${item._id}</p>`;
-        return card;
+// Listen for toggle events (both checkboxes)
+document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('toggle-home')) {
+        toggleVisibility(e.target.dataset.id, e.target.dataset.type, 'showOnHomePage', e.target.checked);
     }
+    if (e.target.classList.contains('toggle-page')) {
+        toggleVisibility(e.target.dataset.id, e.target.dataset.type, 'showOnItsPage', e.target.checked);
+    }
+});
+
+// ================== USAGE EXAMPLE ==================
+// courses.forEach(course => coursesContainer.appendChild(createVisibilityCard(course, 'courses')));
+// products.forEach(product => productsContainer.appendChild(createVisibilityCard(product, 'products')));
+// components.forEach(component => componentsContainer.appendChild(createVisibilityCard(component, 'components')));
 
     
 
