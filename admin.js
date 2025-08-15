@@ -1014,13 +1014,8 @@ function displayProducts(products) {
             ${actionsHtml}
         `;
 
-        // Add event listener for toggle
-        const toggle = card.querySelector(`#toggle-${type}-${item._id}`);
-        if (toggle) {
-            toggle.addEventListener('change', function () {
-                toggleFeatured(item._id, type, this.checked);
-            });
-        }
+        
+        
 
         return card;
     }
@@ -1035,45 +1030,8 @@ function displayProducts(products) {
         return card;
     }
 
-    async function toggleFeatured(id, type, isFeatured) {
-        console.log(`Toggling featured status for ${type} ID ${id} to ${isFeatured}`);
-        // In a real app, send this update to your backend API
-        if (type !== 'course') {
-             showNotification(`Visibility toggle for ${type} not implemented yet.`, 'warning');
-             return; // Only courses implemented for now
-        }
+    
 
-        try {
-             const response = await fetch(`${API_BASE_URL}/api/courses/${id}`, {
-                 method: 'PATCH',
-                 headers: {
-                     'Content-Type': 'application/json',
-                     'Authorization': `Bearer ${authToken}`
-                 },
-                 body: JSON.stringify({ featured: isFeatured })
-             });
-
-             if (!response.ok) {
-                 const errorData = await response.json().catch(() => ({}));
-                 throw new Error(errorData.error || `Failed to update ${type}: ${response.status}`);
-             }
-
-             const updatedCourse = await response.json();
-             console.log(`${type} visibility updated:`, updatedCourse);
-             showNotification(`${type} visibility updated successfully!`, 'success');
-
-             // Update local state
-             const courseIndex = allCourses.findIndex(c => c._id === id);
-             if (courseIndex !== -1) {
-                 allCourses[courseIndex].featured = isFeatured;
-             }
-
-        } catch (error) {
-             console.error(`Error updating ${type} visibility:`, error);
-             showNotification(`Error updating ${type} visibility: ${error.message}`, 'error');
-             // Revert checkbox state on error? Optional.
-        }
-    }
 
 
     // --- General Functions ---
