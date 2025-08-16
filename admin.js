@@ -1095,7 +1095,12 @@ document.addEventListener('change', (e) => {
     });
 }
 
-displayItems()
+document.addEventListener("DOMContentLoaded", () => {
+    loadAndDisplayItems("courses");
+    loadAndDisplayItems("products");
+    loadAndDisplayItems("components");
+});
+
 
     // --- General Functions ---
     function showNotification(message, type) {
