@@ -1,5 +1,5 @@
 // api/updateVisibility.js
-import { connectToDatabase, Course, Products, Component } from '../../lib/db.js';
+import { connectToDatabase, Course, Product, Component } from '../../lib/db.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'PATCH') {
@@ -14,12 +14,13 @@ export default async function handler(req, res) {
     }
 
     try {
+        
         await connectToDatabase();
 
         let Model;
         switch (type) {
             case 'courses': Model = Course; break;
-            case 'products': Model = Products; break;
+            case 'products': Model = Product; break;
             case 'components': Model = Component; break;
             default: return res.status(400).json({ error: 'Invalid type' });
         }
