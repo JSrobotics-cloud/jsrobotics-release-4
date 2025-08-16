@@ -1079,8 +1079,23 @@ document.addEventListener('change', (e) => {
 // components.forEach(component => componentsContainer.appendChild(createVisibilityCard(component, 'components')));
 
     
+    function displayItems(items, type) {
+    const homeContainer = document.getElementById(`home-${type}`);
+    const pageContainer = document.getElementById(`${type}-list`);
 
+    items.forEach(item => {
+        const card = createVisibilityCard(item, type);
 
+        if (item.showOnHomePage && homeContainer) {
+            homeContainer.appendChild(card.cloneNode(true));
+        }
+        if (item.showOnItsPage && pageContainer) {
+            pageContainer.appendChild(card);
+        }
+    });
+}
+
+displayItems()
 
     // --- General Functions ---
     function showNotification(message, type) {
