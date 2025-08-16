@@ -1,4 +1,4 @@
-import { connectToDatabase, Products } from '../../lib/db.js';
+import { connectToDatabase, Product } from '../../lib/db.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         if (showOnHomePage === 'true') filter.showOnHomePage = true;
         if (showOnItsPage === 'true') filter.showOnItsPage = true;
 
-        const products = await Products.find(filter).select('-__v');
+        const products = await Product.find(filter).select('-__v');
         res.status(200).json(products);
 
     } catch (error) {
